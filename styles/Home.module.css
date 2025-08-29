@@ -1,0 +1,208 @@
+.container {
+  background: rgba(30, 41, 59, 0.85);
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  height: 80vh;
+}
+
+.title {
+  font-size: 1.6rem;
+  text-align: center;
+  color: #38bdf8;
+  margin-bottom: 20px;
+}
+
+.talkButton {
+  background: linear-gradient(90deg, #06b6d4, #3b82f6);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: block;
+  margin: 0 auto 20px auto;
+}
+
+.talkButton:hover {
+  background: linear-gradient(90deg, #0ea5e9, #6366f1);
+  transform: scale(1.05);
+}
+
+.chatBox {
+  background: rgba(15, 23, 42, 0.6);
+  padding: 20px;
+  border-radius: 16px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Original user input */
+.userText {
+  background: linear-gradient(90deg, #facc15, #fbbf24);
+  color: #1e293b;
+  font-weight: 600;
+  padding: 10px 14px;
+  border-radius: 12px;
+  margin: 10px 0;
+  max-width: 80%;
+  align-self: flex-end;
+}
+
+/* Corrected version */
+.correctedText {
+  background: linear-gradient(90deg, #fde68a, #fcd34d);
+  color: #1e293b;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin: 5px 0;
+  max-width: 80%;
+  align-self: flex-end;
+  font-style: italic;
+}
+
+/* AI reply */
+.aiText {
+  background: linear-gradient(90deg, #0ea5e9, #6366f1);
+  color: white;
+  font-weight: 500;
+  padding: 10px 14px;
+  border-radius: 12px;
+  margin: 10px 0;
+  max-width: 80%;
+  align-self: flex-start;
+  font-family: "Fira Code", monospace;
+  white-space: pre-wrap;
+}
+
+
+.optionBtn {
+  background: #1d4ed8;
+  color: white;
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  margin: 5px 5px 0 0;
+  cursor: pointer;
+}
+
+.optionBtn:hover {
+  background: #2563eb;
+}
+
+
+.messageBlock {
+  margin-bottom: 12px;
+}
+
+.aiBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.details {
+  margin-top: 6px;
+  width: 100%;
+}
+.optionBlock {
+  margin-top: 8px;
+}
+
+.optionBtn {
+  background: linear-gradient(90deg, #3b82f6, #2563eb); /* albastru modern */
+  color: white;
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  margin-bottom: 4px;
+  transition: background 0.2s ease;
+}
+
+.optionBtn:hover {
+  background: linear-gradient(90deg, #2563eb, #1d4ed8);
+}
+
+.subText {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 8px;
+  border-radius: 6px;
+  margin-top: 2px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+
+
+
+.aiBubble {
+  background: rgba(59, 130, 246, 0.1); /* albastru foarte subtil */
+  border-radius: 12px;
+  padding: 12px;
+  margin: 10px 0;
+  max-width: 80%;
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aiText {
+  background: transparent; /* scos fundalul */
+  color: #93c5fd;          /* text albastru deschis */
+  font-weight: 500;
+  margin: 0;
+}
+
+.optionBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.optionBtn {
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+  color: white;
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.optionBtn:hover {
+  background: linear-gradient(90deg, #2563eb, #1d4ed8);
+}
+
+.subText {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+}
+
+.icon {
+  margin-right: 6px;
+  font-size: 1rem;
+}
