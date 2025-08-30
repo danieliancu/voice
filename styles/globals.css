@@ -8,3 +8,44 @@ body {
   align-items: center;
   height: 100vh;
 }
+@media screen and (max-width: 600px) {
+  #__next {
+    width: 100%;
+  }
+}
+
+/* Scrollbar general */
+::-webkit-scrollbar {
+  width: 8px;   /* grosimea scroll-ului vertical */
+  height: 8px;  /* grosimea scroll-ului orizontal */
+}
+
+/* Fundal scrollbar */
+::-webkit-scrollbar-track {
+  background: #111;   /* fundal negru subtil */
+  border-radius: 8px; /* rotund pe fundal */
+}
+
+/* Mâner (thumb) */
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 8px; /* colțuri complet rotunjite */
+  transition: background 0.3s ease;
+}
+
+/* Hover pe thumb */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #333 #111;
+}
+
+
+/* globals.css */
+.caveat {
+  font-family: 'Caveat', cursive;
+}

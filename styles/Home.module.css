@@ -1,15 +1,15 @@
 .container {
-  background: rgba(30, 41, 59, 0.85);
   border-radius: 20px;
-  padding: 30px;
-  max-width: 600px;
-  width: 90%;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(12px);
+  width: 600px;
   display: flex;
   flex-direction: column;
+  height: 100vh;
+  padding:0 20px;
   height: 80vh;
+  border: 1px solid white;
 }
+
+
 
 .title {
   font-size: 1.6rem;
@@ -38,24 +38,41 @@
 }
 
 .chatBox {
-  background: rgba(15, 23, 42, 0.6);
   padding: 20px;
-  border-radius: 16px;
   flex: 1;
   overflow-y: auto;
+  max-width:100%;
+  margin-bottom:20px;
 }
+
+@media screen and (max-width: 600px) {
+  .container {
+    max-width:600px;
+    width:unset;
+    height: 100vh;
+    border:none;
+  }
+  .chatBox {
+    padding: 0px;
+    margin-bottom:0px;
+  }
+}
+
 
 /* Original user input */
 .userText {
-  background: linear-gradient(90deg, #facc15, #fbbf24);
+  display: flex;
+  align-items: center;     /* aliniere verticală */
+  justify-content: space-between; /* text la stânga, bifa la dreapta */
+  background: #ffcc00;     /* păstrezi fundalul galben */
+  padding: 8px 12px;
+  border-radius: 6px;
   color: #1e293b;
-  font-weight: 600;
-  padding: 10px 14px;
-  border-radius: 12px;
-  margin: 10px 0;
-  max-width: 80%;
-  align-self: flex-end;
+  margin-top:45px;
+  margin-bottom:0;
+  min-height:30px;
 }
+
 
 /* Corrected version */
 .correctedText {
@@ -89,11 +106,12 @@
   background: #1d4ed8;
   color: white;
   font-size: 0.9rem;
-  padding: 6px 12px;
+  padding: 8px;
   border: none;
   border-radius: 8px;
   margin: 5px 5px 0 0;
   cursor: pointer;
+  line-height:1rem;
 }
 
 .optionBtn:hover {
@@ -144,7 +162,7 @@
   border-radius: 6px;
   margin-top: 2px;
   font-size: 0.9rem;
-  line-height: 1.4;
+  line-height: 1rem;
   white-space: pre-wrap;
 }
 
@@ -154,9 +172,9 @@
 .aiBubble {
   background: rgba(59, 130, 246, 0.1); /* albastru foarte subtil */
   border-radius: 12px;
-  padding: 12px;
+  padding: 6px 12px 3px 12px;
   margin: 10px 0;
-  max-width: 80%;
+  max-width: 100%;
   align-self: flex-start;
   display: flex;
   flex-direction: column;
@@ -179,8 +197,8 @@
 .optionBtn {
   background: linear-gradient(90deg, #3b82f6, #2563eb);
   color: white;
-  font-size: 0.85rem;
-  padding: 6px 12px;
+  font-size: 0.9rem;
+  padding: 8px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -188,6 +206,7 @@
   align-items: center;
   font-weight: 600;
   transition: background 0.2s ease;
+  width:100%;
 }
 
 .optionBtn:hover {
@@ -206,3 +225,5 @@
   margin-right: 6px;
   font-size: 1rem;
 }
+
+

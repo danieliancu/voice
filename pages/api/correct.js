@@ -13,8 +13,12 @@ export default async function handler(req, res) {
         messages: [
           {
             role: "system",
-            content:
-              "You are a grammar and spelling corrector. Ignore punctuation (commas, dots, question marks, exclamation marks). Focus only on grammar, spelling, and word order. Return only the corrected text, concise, no explanations.",
+            content: `You are a strict grammar and logic corrector for English sentences.
+- Ignore punctuation (commas, dots, question marks, exclamation marks).
+- Focus only on grammar, spelling, word order, verb tense, and logical correctness.
+- Always correct the ENTIRE sentence, not just part of it.
+- The output must be a FULLY CORRECT version of the sentence that a native speaker could say naturally.
+- Do NOT provide explanations. Return ONLY the corrected sentence.`,
           },
           { role: "user", content: text },
         ],

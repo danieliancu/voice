@@ -1,20 +1,21 @@
 import { useState, useEffect, useRef } from "react";
 import styles from "../styles/Home.module.css";
-import { Volume2 } from "lucide-react"; // 🔊 icon
+import { Volume2, Check, Square, Mic } from "lucide-react";
+import { motion } from "framer-motion";
+import React from "react";
 
 export default function Home() {
   const [listening, setListening] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
   const [messages, setMessages] = useState([]);
   const chatEndRef = useRef(null);
 
   let recognition;
 
-  // Scroll automat la ultima bulă
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Start STT
   const startListening = () => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -25,7 +26,6 @@ export default function Home() {
     recognition.onresult = async (event) => {
       const transcript = event.results[0][0].transcript;
 
-      // Save original
       const originalMessage = {
         role: "user",
         type: "original",
@@ -33,10 +33,10 @@ export default function Home() {
       };
       setMessages((prev) => [...prev, originalMessage]);
 
-      // Correct text
-      const corrected = await correctText(transcript);
+      recognition.stop();
+      setListening(false);
 
-      // Send original + corrected to AI
+      const corrected = await correctText(transcript);
       getAIResponse(transcript, corrected);
     };
 
@@ -49,7 +49,6 @@ export default function Home() {
     setListening(false);
   };
 
-  // Correction API call
   const correctText = async (text) => {
     try {
       const res = await fetch("/api/correct", {
@@ -65,7 +64,6 @@ export default function Home() {
     }
   };
 
-  // Main chat call
   const getAIResponse = async (original, corrected) => {
     const res = await fetch("/api/chat", {
       method: "POST",
@@ -79,88 +77,220 @@ export default function Home() {
       parsed = JSON.parse(data.reply);
     } catch (e) {
       parsed = {
-        explanation: data.reply,
+        explanation: "",
         corrections: "",
         alternative: "",
       };
     }
 
-    // Vorbește explicația
+    if (
+      parsed.corrections.trim().toLowerCase() === original.trim().toLowerCase() ||
+      parsed.explanation?.toLowerCase().includes("is correct")
+    ) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "ai",
+          explanation: "",
+          corrections: "",
+          alternative: parsed.alternative || "",
+          correct: true,
+        },
+      ]);
+      return;
+    }
+
+    if (
+      parsed.explanation?.includes("can be expressed more naturally") &&
+      !parsed.corrections
+    ) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "ai",
+          explanation: "",
+          corrections: "",
+          alternative: parsed.alternative || "",
+          correct: true,
+        },
+      ]);
+      return;
+    }
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "ai",
+        ...parsed,
+        mistakes: parsed.mistakes || [],
+        correct: false,
+      },
+    ]);
+
     if (parsed.explanation) {
       speak(parsed.explanation);
     }
-
-    setMessages((prev) => [...prev, { role: "ai", ...parsed }]);
   };
 
-  // TTS (ignoram complet semnele de punctuație)
   const speak = (msg) => {
-    const cleanMsg = msg.replace(/[.,!?;]/g, ""); // elimină punctuația
+    if (!msg) return;
+
+    const textWithPauses = msg.replace(/\.\s+/g, ".\n\n");
     const synth = window.speechSynthesis;
-    const utter = new SpeechSynthesisUtterance(cleanMsg);
+    synth.cancel(); // important pentru performanță
+    const utter = new SpeechSynthesisUtterance(textWithPauses);
+
     utter.lang = "en-US";
     utter.rate = 1;
     utter.pitch = 1;
+
+    utter.onstart = () => {
+      setSpeaking(true);
+      setListening(false);
+    };
+
+    utter.onend = () => {
+      setSpeaking(false);
+    };
+
     synth.speak(utter);
   };
 
+const highlightMistakes = (text, mistakes) => {
+  if (!mistakes || mistakes.length === 0) return text;
+
+  let highlighted = text;
+  
+  mistakes
+    .sort((a, b) => b.length - a.length) // expresiile mai lungi primele
+    .forEach(mistake => {
+      if (!mistake) return;
+      const escaped = mistake.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex = new RegExp(escaped, "gi");
+      highlighted = highlighted.replace(
+        regex,
+        match => `<span style="text-decoration: line-through; color: red;">${match}</span>`
+      );
+    });
+
+  // îl returnăm ca React element, nu ca HTML brut
+  return <span dangerouslySetInnerHTML={{ __html: highlighted }} />;
+};
+
+
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>FixMeEnglish</h1>
-      <button
+      <h1 className={styles.title}>Fix<span className="caveat" style={{ color:"#fc0" }}>My</span>Language!</h1>
+
+      <motion.button
         onClick={listening ? stopListening : startListening}
         className={styles.talkButton}
+        disabled={speaking}
+        animate={
+          speaking
+            ? { scale: [1, 1.05, 1], opacity: [1, 0.7, 1] }
+            : { scale: 1, opacity: 1 }
+        }
+        transition={{ duration: 1, repeat: speaking ? Infinity : 0 }}
       >
-        {listening ? "Stop" : "Talk"}
-      </button>
+        {speaking ? (
+          <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+            <Mic size={22} /> Talking...
+          </span>
+        ) : listening ? (
+          <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+            <Square size={22} style={{ fill: "red" }} /> Stop
+          </span>
+        ) : (
+          <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+            <Mic size={22} /> Talk
+          </span>
+        )}
+      </motion.button>
 
       <div className={styles.chatBox}>
         {messages.map((m, i) => (
-          <div key={i} className={styles.messageBlock}>
-            {/* Original user message */}
-            {m.role === "user" && m.type === "original" && (
-              <p className={styles.userText}>
-                <b>You:</b> {m.text}
-              </p>
-            )}
-
-            {/* AI response */}
-            {m.role === "ai" && (
-              <div className={styles.aiBubble}>
-                <p className={styles.aiText}>
-                  <b>AI:</b> {m.explanation}
-                </p>
-
-                {m.corrections && (
-                  <div className={styles.optionBlock}>
-                    <button
-                      className={styles.optionBtn}
-                      onClick={() => speak(m.corrections)}
-                    >
-                      <span className={styles.icon}>🔊</span> Corrections
-                    </button>
-                    <p className={styles.subText}>{m.corrections}</p>
-                  </div>
-                )}
-
-                {m.alternative && (
-                  <div className={styles.optionBlock}>
-                    <button
-                      className={styles.optionBtn}
-                      onClick={() => speak(m.alternative)}
-                    >
-                      <span className={styles.icon}>🔊</span> Natural alternative
-                    </button>
-                    <p className={styles.subText}>{m.alternative}</p>
-                  </div>
-                )}
-              </div>
-            )}
-
-          </div>
+          <Message
+            key={i}
+            m={m}
+            i={i}
+            nextMessage={messages[i + 1]}
+            speak={speak}
+            highlightMistakes={highlightMistakes}
+            speaking={speaking}
+          />
         ))}
         <div ref={chatEndRef} />
       </div>
     </div>
   );
 }
+
+/* 🧊 Componentă înghețată: NU se recalculează la fiecare update */
+const Message = React.memo(function Message({ m, i, nextMessage, speak, highlightMistakes, speaking }) {
+  return (
+    <div className={styles.messageBlock}>
+      {m.role === "user" && m.type === "original" && (
+        <div className={styles.userText}>
+          <span>
+            <b>You:</b> {highlightMistakes(m.text, nextMessage?.mistakes)}
+          </span>
+
+          {nextMessage?.role === "ai" && nextMessage?.correct && (
+            <motion.span
+              initial={{ scale: 0.3 }}
+              animate={{ scale: [0.3, 1.2, 1] }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              style={{ display: "inline-flex", alignItems: "center" }}
+            >
+              <Check size={24} strokeWidth={3} color="limegreen" />
+            </motion.span>
+          )}
+        </div>
+      )}
+
+      {m.role === "ai" && (
+        <div className={styles.aiBubble}>
+          {m.explanation && !m.correct && (
+            <div className={styles.aiText}>
+              {m.explanation.split(". ").map((line, idx) => (
+                <div key={idx} style={{ marginBottom: "6px" }}>
+                  {line.trim().endsWith(".") ? line.trim() : line.trim() + "."}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {m.corrections && !m.correct && (
+            <div className={styles.optionBlock}>
+              <button
+                className={styles.optionBtn}
+                onClick={() => speak(m.corrections)}
+              >
+                <Volume2 size={16} style={{ marginRight: "5px" }} /> Corrections
+              </button>
+              <p className={styles.subText}>{m.corrections}</p>
+            </div>
+          )}
+
+{m.alternative &&
+ m.alternative.trim() !== m.corrections?.trim() &&
+ m.alternative.trim().toLowerCase() !== nextMessage?.original?.trim().toLowerCase() && (
+  <div className={styles.optionBlock}>
+    <button
+      className={styles.optionBtn}
+      onClick={() => speak(m.alternative)}
+      disabled={speaking}
+    >
+      <Volume2 size={16} style={{ marginRight: "5px" }} /> Natural alternative
+    </button>
+    <p className={styles.subText}>{m.alternative}</p>
+  </div>
+)}
+
+
+        </div>
+      )}
+    </div>
+  );
+});
