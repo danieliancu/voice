@@ -96,23 +96,20 @@ export default function Home() {
       };
     }
 
-    // ✅ cazul în care propoziția e corectă → nu adăugăm balon AI separat
+    // ✅ cazul în care propoziția e corectă → marchează mesajul user ca "correct"
     if (
       parsed.explanation === "" &&
       parsed.mistakes?.length === 0 &&
       parsed.corrections.trim().toLowerCase() === original.trim().toLowerCase()
     ) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "ai",
-          explanation: "",
-          corrections: "",
-          alternative: "",
-          mistakes: [],
-          correct: true, // doar semnalizare corect
-        },
-      ]);
+      setMessages((prev) => {
+        const updated = [...prev];
+        updated[updated.length - 1] = {
+          ...updated[updated.length - 1],
+          correct: true
+        };
+        return updated;
+      });
       return;
     }
 
@@ -178,7 +175,7 @@ export default function Home() {
     <div className={styles.container}>
       <div className={styles.containerHeader}>
         <h1 className={styles.title}>
-          Fix<span className="caveat" style={{ color: "#fc0" }}>My</span>Language!
+          fix<span style={{ color: "#fc0"}}>my</span>lang<span style={{ color: "#fc0"}}>.com</span>
         </h1>
 
         <motion.button
@@ -202,12 +199,11 @@ export default function Home() {
             </span>
           ) : (
             <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              <Mic size={22} /> Talk
+              <Mic size={22} /> Speak
             </span>
           )}
         </motion.button>
       </div>
-
 
       <div className={styles.chatBox}>
         {messages.map((m, i) => (
@@ -238,12 +234,17 @@ const Message = React.memo(function Message({
   return (
     <div className={styles.messageBlock}>
       {m.role === "user" && m.type === "original" && (
-        <div className={styles.userText}>
+        <div
+          className={`${styles.userText} ${m.correct ? styles.correct : ""}`}
+        >
           <span>
-            <b>You:</b> {highlightMistakes(m.text, nextMessage?.mistakes)}
+            <b>You:</b>{" "}
+            {m.correct
+              ? m.text
+              : highlightMistakes(m.text, nextMessage?.mistakes)}
           </span>
 
-          {nextMessage?.role === "ai" && nextMessage?.correct && (
+          {m.correct && (
             <motion.span
               initial={{ scale: 0.3 }}
               animate={{ scale: [0.3, 1.2, 1] }}
@@ -259,10 +260,8 @@ const Message = React.memo(function Message({
       {m.role === "ai" && (
         <div className={styles.aiBubble}>
           {m.intro ? (
-            // 🟢 INTRO mesaj
             <div className={styles.aiText}>{m.text}</div>
           ) : (
-            // 🟢 Mesaj AI normal
             <>
               {m.explanation && (
                 <div className={styles.aiText}>
@@ -308,4 +307,3 @@ const Message = React.memo(function Message({
     </div>
   );
 });
-
