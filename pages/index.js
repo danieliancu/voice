@@ -7,7 +7,19 @@ import React from "react";
 export default function Home() {
   const [listening, setListening] = useState(false);
   const [speaking, setSpeaking] = useState(false);
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([
+    {
+      role: "ai",
+      explanation: "",
+      corrections: "",
+      alternative: "",
+      mistakes: [],
+      correct: false,
+      intro: true,
+      text: "Hello! I’m your English correction assistant. Just tap the Talk button below and I’ll help you correct your sentences and suggest natural alternatives."
+    }
+  ]);
+
   const chatEndRef = useRef(null);
 
   let recognition;
@@ -215,7 +227,6 @@ export default function Home() {
   );
 }
 
-/* 🧊 Componentă optimizată */
 const Message = React.memo(function Message({
   m,
   i,
@@ -232,7 +243,6 @@ const Message = React.memo(function Message({
             <b>You:</b> {highlightMistakes(m.text, nextMessage?.mistakes)}
           </span>
 
-          {/* ✅ doar check verde, fără balon AI suplimentar */}
           {nextMessage?.role === "ai" && nextMessage?.correct && (
             <motion.span
               initial={{ scale: 0.3 }}
@@ -246,48 +256,56 @@ const Message = React.memo(function Message({
         </div>
       )}
 
-      {m.role === "ai" && !m.correct && (
+      {m.role === "ai" && (
         <div className={styles.aiBubble}>
-          {m.explanation && (
-            <div className={styles.aiText}>
-              {m.explanation.split(". ").map((line, idx) => (
-                <div key={idx} style={{ marginBottom: "6px" }}>
-                  {line.trim().endsWith(".") ? line.trim() : line.trim() + "."}
+          {m.intro ? (
+            // 🟢 INTRO mesaj
+            <div className={styles.aiText}>{m.text}</div>
+          ) : (
+            // 🟢 Mesaj AI normal
+            <>
+              {m.explanation && (
+                <div className={styles.aiText}>
+                  {m.explanation.split(". ").map((line, idx) => (
+                    <div key={idx} style={{ marginBottom: "6px" }}>
+                      {line.trim().endsWith(".") ? line.trim() : line.trim() + "."}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )}
+              )}
 
-          {m.corrections && (
-            <div className={styles.optionBlock}>
-              <button
-                className={styles.optionBtn}
-                onClick={() => speak(m.corrections)}
-              >
-                <Volume2 size={16} style={{ marginRight: "5px" }} /> Corrections
-              </button>
-              <p className={styles.subText}>{m.corrections}</p>
-            </div>
-          )}
+              {m.corrections && (
+                <div className={styles.optionBlock}>
+                  <button
+                    className={styles.optionBtn}
+                    onClick={() => speak(m.corrections)}
+                  >
+                    <Volume2 size={16} style={{ marginRight: "5px" }} /> Corrections
+                  </button>
+                  <p className={styles.subText}>{m.corrections}</p>
+                </div>
+              )}
 
-          {m.alternative &&
-            m.alternative.trim() !== m.corrections?.trim() &&
-            m.alternative.trim().toLowerCase() !==
-              nextMessage?.original?.trim().toLowerCase() && (
-              <div className={styles.optionBlock}>
-                <button
-                  className={styles.optionBtn}
-                  onClick={() => speak(m.alternative)}
-                  disabled={speaking}
-                >
-                  <Volume2 size={16} style={{ marginRight: "5px" }} /> Natural
-                  alternative
-                </button>
-                <p className={styles.subText}>{m.alternative}</p>
-              </div>
-            )}
+              {m.alternative &&
+                m.alternative.trim() !== m.corrections?.trim() &&
+                m.alternative.trim().toLowerCase() !==
+                  nextMessage?.original?.trim().toLowerCase() && (
+                  <div className={styles.optionBlock}>
+                    <button
+                      className={styles.optionBtn}
+                      onClick={() => speak(m.alternative)}
+                      disabled={speaking}
+                    >
+                      <Volume2 size={16} style={{ marginRight: "5px" }} /> Natural alternative
+                    </button>
+                    <p className={styles.subText}>{m.alternative}</p>
+                  </div>
+                )}
+            </>
+          )}
         </div>
       )}
     </div>
   );
 });
+
