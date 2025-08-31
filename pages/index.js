@@ -164,35 +164,38 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>
-        Fix<span className="caveat" style={{ color: "#fc0" }}>My</span>Language!
-      </h1>
+      <div className={styles.containerHeader}>
+        <h1 className={styles.title}>
+          Fix<span className="caveat" style={{ color: "#fc0" }}>My</span>Language!
+        </h1>
 
-      <motion.button
-        onClick={listening ? stopListening : startListening}
-        className={styles.talkButton}
-        disabled={speaking}
-        animate={
-          speaking
-            ? { scale: [1, 1.05, 1], opacity: [1, 0.7, 1] }
-            : { scale: 1, opacity: 1 }
-        }
-        transition={{ duration: 1, repeat: speaking ? Infinity : 0 }}
-      >
-        {speaking ? (
-          <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-            <Mic size={22} /> Talking...
-          </span>
-        ) : listening ? (
-          <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-            <Square size={22} style={{ fill: "red" }} /> Stop
-          </span>
-        ) : (
-          <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-            <Mic size={22} /> Talk
-          </span>
-        )}
-      </motion.button>
+        <motion.button
+          onClick={listening ? stopListening : startListening}
+          className={styles.talkButton}
+          disabled={speaking}
+          animate={
+            speaking
+              ? { scale: [1, 1.05, 1], opacity: [1, 0.7, 1] }
+              : { scale: 1, opacity: 1 }
+          }
+          transition={{ duration: 1, repeat: speaking ? Infinity : 0 }}
+        >
+          {speaking ? (
+            <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+              <Mic size={22} /> Talking...
+            </span>
+          ) : listening ? (
+            <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+              <Square size={22} style={{ fill: "red" }} /> Stop
+            </span>
+          ) : (
+            <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+              <Mic size={22} /> Talk
+            </span>
+          )}
+        </motion.button>
+      </div>
+
 
       <div className={styles.chatBox}>
         {messages.map((m, i) => (

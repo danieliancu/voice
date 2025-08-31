@@ -1,7 +1,7 @@
 body {
   margin: 0;
   font-family: "Inter", "Segoe UI", sans-serif;
-  background: linear-gradient(135deg, #0f172a, #1e293b);
+  background: #0f172a;
   color: #f8fafc;
   display: flex;
   justify-content: center;
