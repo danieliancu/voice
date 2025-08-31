@@ -80,12 +80,15 @@ export default function Home() {
         explanation: "",
         corrections: "",
         alternative: "",
+        mistakes: [],
       };
     }
 
+    // ✅ cazul în care propoziția e corectă → nu adăugăm balon AI separat
     if (
-      parsed.corrections.trim().toLowerCase() === original.trim().toLowerCase() ||
-      parsed.explanation?.toLowerCase().includes("is correct")
+      parsed.explanation === "" &&
+      parsed.mistakes?.length === 0 &&
+      parsed.corrections.trim().toLowerCase() === original.trim().toLowerCase()
     ) {
       setMessages((prev) => [
         ...prev,
@@ -93,36 +96,20 @@ export default function Home() {
           role: "ai",
           explanation: "",
           corrections: "",
-          alternative: parsed.alternative || "",
-          correct: true,
+          alternative: "",
+          mistakes: [],
+          correct: true, // doar semnalizare corect
         },
       ]);
       return;
     }
 
-    if (
-      parsed.explanation?.includes("can be expressed more naturally") &&
-      !parsed.corrections
-    ) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "ai",
-          explanation: "",
-          corrections: "",
-          alternative: parsed.alternative || "",
-          correct: true,
-        },
-      ]);
-      return;
-    }
-
+    // cazul clasic → afișăm corecturile/explicațiile
     setMessages((prev) => [
       ...prev,
       {
         role: "ai",
         ...parsed,
-        mistakes: parsed.mistakes || [],
         correct: false,
       },
     ]);
@@ -134,10 +121,9 @@ export default function Home() {
 
   const speak = (msg) => {
     if (!msg) return;
-
     const textWithPauses = msg.replace(/\.\s+/g, ".\n\n");
     const synth = window.speechSynthesis;
-    synth.cancel(); // important pentru performanță
+    synth.cancel();
     const utter = new SpeechSynthesisUtterance(textWithPauses);
 
     utter.lang = "en-US";
@@ -156,31 +142,31 @@ export default function Home() {
     synth.speak(utter);
   };
 
-const highlightMistakes = (text, mistakes) => {
-  if (!mistakes || mistakes.length === 0) return text;
+  const highlightMistakes = (text, mistakes) => {
+    if (!mistakes || mistakes.length === 0) return text;
 
-  let highlighted = text;
-  
-  mistakes
-    .sort((a, b) => b.length - a.length) // expresiile mai lungi primele
-    .forEach(mistake => {
-      if (!mistake) return;
-      const escaped = mistake.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const regex = new RegExp(escaped, "gi");
-      highlighted = highlighted.replace(
-        regex,
-        match => `<span style="text-decoration: line-through; color: red;">${match}</span>`
-      );
-    });
+    let highlighted = text;
+    mistakes
+      .sort((a, b) => b.length - a.length)
+      .forEach((mistake) => {
+        if (!mistake) return;
+        const escaped = mistake.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const regex = new RegExp(escaped, "gi");
+        highlighted = highlighted.replace(
+          regex,
+          (match) =>
+            `<span style="text-decoration: line-through; color: red;">${match}</span>`
+        );
+      });
 
-  // îl returnăm ca React element, nu ca HTML brut
-  return <span dangerouslySetInnerHTML={{ __html: highlighted }} />;
-};
-
+    return <span dangerouslySetInnerHTML={{ __html: highlighted }} />;
+  };
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Fix<span className="caveat" style={{ color:"#fc0" }}>My</span>Language!</h1>
+      <h1 className={styles.title}>
+        Fix<span className="caveat" style={{ color: "#fc0" }}>My</span>Language!
+      </h1>
 
       <motion.button
         onClick={listening ? stopListening : startListening}
@@ -226,8 +212,15 @@ const highlightMistakes = (text, mistakes) => {
   );
 }
 
-/* 🧊 Componentă înghețată: NU se recalculează la fiecare update */
-const Message = React.memo(function Message({ m, i, nextMessage, speak, highlightMistakes, speaking }) {
+/* 🧊 Componentă optimizată */
+const Message = React.memo(function Message({
+  m,
+  i,
+  nextMessage,
+  speak,
+  highlightMistakes,
+  speaking,
+}) {
   return (
     <div className={styles.messageBlock}>
       {m.role === "user" && m.type === "original" && (
@@ -236,6 +229,7 @@ const Message = React.memo(function Message({ m, i, nextMessage, speak, highligh
             <b>You:</b> {highlightMistakes(m.text, nextMessage?.mistakes)}
           </span>
 
+          {/* ✅ doar check verde, fără balon AI suplimentar */}
           {nextMessage?.role === "ai" && nextMessage?.correct && (
             <motion.span
               initial={{ scale: 0.3 }}
@@ -249,9 +243,9 @@ const Message = React.memo(function Message({ m, i, nextMessage, speak, highligh
         </div>
       )}
 
-      {m.role === "ai" && (
+      {m.role === "ai" && !m.correct && (
         <div className={styles.aiBubble}>
-          {m.explanation && !m.correct && (
+          {m.explanation && (
             <div className={styles.aiText}>
               {m.explanation.split(". ").map((line, idx) => (
                 <div key={idx} style={{ marginBottom: "6px" }}>
@@ -261,7 +255,7 @@ const Message = React.memo(function Message({ m, i, nextMessage, speak, highligh
             </div>
           )}
 
-          {m.corrections && !m.correct && (
+          {m.corrections && (
             <div className={styles.optionBlock}>
               <button
                 className={styles.optionBtn}
@@ -273,22 +267,22 @@ const Message = React.memo(function Message({ m, i, nextMessage, speak, highligh
             </div>
           )}
 
-{m.alternative &&
- m.alternative.trim() !== m.corrections?.trim() &&
- m.alternative.trim().toLowerCase() !== nextMessage?.original?.trim().toLowerCase() && (
-  <div className={styles.optionBlock}>
-    <button
-      className={styles.optionBtn}
-      onClick={() => speak(m.alternative)}
-      disabled={speaking}
-    >
-      <Volume2 size={16} style={{ marginRight: "5px" }} /> Natural alternative
-    </button>
-    <p className={styles.subText}>{m.alternative}</p>
-  </div>
-)}
-
-
+          {m.alternative &&
+            m.alternative.trim() !== m.corrections?.trim() &&
+            m.alternative.trim().toLowerCase() !==
+              nextMessage?.original?.trim().toLowerCase() && (
+              <div className={styles.optionBlock}>
+                <button
+                  className={styles.optionBtn}
+                  onClick={() => speak(m.alternative)}
+                  disabled={speaking}
+                >
+                  <Volume2 size={16} style={{ marginRight: "5px" }} /> Natural
+                  alternative
+                </button>
+                <p className={styles.subText}>{m.alternative}</p>
+              </div>
+            )}
         </div>
       )}
     </div>
