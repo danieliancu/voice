@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import styles from "../styles/Home.module.css";
-import { Volume2, Check, Square, Mic } from "lucide-react";
+import { Volume2, Check, Square, Mic, Pen, Send } from "lucide-react"; // ➕ Pen și Send
 import { motion } from "framer-motion";
 import React from "react";
 
 export default function Home() {
   const [listening, setListening] = useState(false);
   const [speaking, setSpeaking] = useState(false);
+  const [writeMode, setWriteMode] = useState(false); // ➕ nou state
+  const [inputText, setInputText] = useState(""); // ➕ text scris
   const [messages, setMessages] = useState([
     {
       role: "ai",
@@ -16,7 +18,7 @@ export default function Home() {
       mistakes: [],
       correct: false,
       intro: true,
-      text: "Hello! I’m your English correction assistant. Just tap the Talk button below and I’ll help you correct your sentences and suggest natural alternatives."
+      text: "Hello! I’m your English correction assistant. Just tap the Talk or Write button below and I’ll help you correct your sentences."
     }
   ]);
 
@@ -120,8 +122,10 @@ export default function Home() {
         role: "ai",
         ...parsed,
         correct: false,
+        original, // ➕ ca să ai referință pentru comparație
       },
     ]);
+
 
     if (parsed.explanation) {
       speak(parsed.explanation);
@@ -168,43 +172,62 @@ export default function Home() {
         );
       });
 
-    return <span dangerouslySetInnerHTML={{ __html: highlighted }} />;
+    return highlighted; // string HTML
   };
+
+  const handleSend = async () => {
+    if (!inputText.trim()) return;
+
+    const messageToSend = inputText; // păstrăm textul curent
+    setInputText(""); // 🔹 golește imediat inputul (UI se șterge)
+
+    const originalMessage = {
+      role: "user",
+      type: "original",
+      text: messageToSend,
+    };
+    setMessages((prev) => [...prev, originalMessage]);
+
+    // trimitem în fundal la corectare și AI
+    const corrected = await correctText(messageToSend);
+    await getAIResponse(messageToSend, corrected);
+  };
+
 
   return (
     <div className={styles.container}>
       <div className={styles.containerHeader}>
-        <h1 className={styles.title}>
-          fix<span style={{ color: "#fc0"}}>my</span>lang<span style={{ color: "#fc0"}}>.com</span>
-        </h1>
 
-        <motion.button
-          onClick={listening ? stopListening : startListening}
-          className={styles.talkButton}
-          disabled={speaking}
-          animate={
-            speaking
-              ? { scale: [1, 1.05, 1], opacity: [1, 0.7, 1] }
-              : { scale: 1, opacity: 1 }
-          }
-          transition={{ duration: 1, repeat: speaking ? Infinity : 0 }}
-        >
-          {speaking ? (
-            <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              <Mic size={22} /> Talking...
+        <div style={{ display: "flex", gap: "10px", justifyContent: "center", marginTop: "40px" }}>
+          {/* Buton TALK */}
+          <motion.button
+            onClick={listening ? stopListening : startListening}
+            className={styles.talkButton}
+            disabled={speaking || writeMode} // dezactivat dacă e în Write
+          >
+            {listening ? (
+              <span className={styles.containerBtn}><Square size={18} style={{ fill: "red" }} /> Stop</span>
+            ) : (
+              <span className={styles.containerBtn}><Mic size={18} /> Talk</span>
+            )}
+          </motion.button>
+
+          {/* Buton WRITE */}
+          <button
+            onClick={() => setWriteMode((prev) => !prev)}
+            className={styles.talkButton}
+            style={{
+              background: writeMode ? "#f59e0b" : "linear-gradient(90deg,#06b6d4,#3b82f6)"
+            }}
+          >
+            <span className={styles.containerBtn}>
+              <Pen size={18} /> Write {writeMode ? "On" : ""}
             </span>
-          ) : listening ? (
-            <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              <Square size={22} style={{ fill: "red" }} /> Stop
-            </span>
-          ) : (
-            <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              <Mic size={22} /> Speak
-            </span>
-          )}
-        </motion.button>
+          </button>
+        </div>
       </div>
 
+      {/* Chat messages */}
       <div className={styles.chatBox}>
         {messages.map((m, i) => (
           <Message
@@ -219,6 +242,28 @@ export default function Home() {
         ))}
         <div ref={chatEndRef} />
       </div>
+
+      {/* INPUT WhatsApp-like */}
+      {writeMode && (
+        <div className={styles.inputBar}>
+          <input
+            type="text"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            placeholder="Type a message..."
+            className={styles.textInput}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            name="no-autofill"   // 👈 nume non-standard
+            autoComplete="new-password" // 👈 hack des folosit
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck="false"
+          />
+          <button onClick={handleSend} className={styles.sendBtn}>
+            <Send size={20} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -231,6 +276,35 @@ const Message = React.memo(function Message({
   highlightMistakes,
   speaking,
 }) {
+  // Funcție de normalizare
+  const normalize = (text) =>
+    text
+      .toLowerCase()
+      .replace(/[.,!?]/g, "")
+      .trim();
+
+  // Verifică dacă două propoziții sunt aproape identice
+  const isSimilar = (a, b) => {
+    if (!a || !b) return false;
+    const normA = normalize(a);
+    const normB = normalize(b);
+    if (normA === normB) return true;
+
+    // Dacă diferă doar printr-un cuvânt "filler"
+    const fillers = ["please", "well", "actually", "just"];
+    const wordsA = normA.split(" ");
+    const wordsB = normB.split(" ");
+
+    if (Math.abs(wordsA.length - wordsB.length) <= 1) {
+      return fillers.some(
+        (f) =>
+          normA === normB + " " + f ||
+          normB === normA + " " + f
+      );
+    }
+    return false;
+  };
+
   return (
     <div className={styles.messageBlock}>
       {m.role === "user" && m.type === "original" && (
@@ -239,9 +313,15 @@ const Message = React.memo(function Message({
         >
           <span>
             <b>You:</b>{" "}
-            {m.correct
-              ? m.text
-              : highlightMistakes(m.text, nextMessage?.mistakes)}
+            {m.correct ? (
+              m.text
+            ) : (
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: highlightMistakes(m.text, nextMessage?.mistakes),
+                }}
+              />
+            )}
           </span>
 
           {m.correct && (
@@ -267,35 +347,45 @@ const Message = React.memo(function Message({
                 <div className={styles.aiText}>
                   {m.explanation.split(". ").map((line, idx) => (
                     <div key={idx} style={{ marginBottom: "6px" }}>
-                      {line.trim().endsWith(".") ? line.trim() : line.trim() + "."}
+                      {line.trim().endsWith(".")
+                        ? line.trim()
+                        : line.trim() + "."}
                     </div>
                   ))}
                 </div>
               )}
 
-              {m.corrections && (
-                <div className={styles.optionBlock}>
-                  <button
-                    className={styles.optionBtn}
-                    onClick={() => speak(m.corrections)}
-                  >
-                    <Volume2 size={16} style={{ marginRight: "5px" }} /> Corrections
-                  </button>
-                  <p className={styles.subText}>{m.corrections}</p>
-                </div>
-              )}
+              {m.corrections &&
+                m.corrections.trim().toLowerCase() !==
+                  m.original?.trim().toLowerCase() && (
+                  <div className={styles.optionBlock}>
+                    <button
+                      className={styles.optionBtn}
+                      onClick={() => speak(m.corrections)}
+                    >
+                      <Volume2
+                        size={16}
+                        style={{ marginRight: "5px" }}
+                      />{" "}
+                      Corrections
+                    </button>
+                    <p className={styles.subText}>{m.corrections}</p>
+                  </div>
+                )}
 
               {m.alternative &&
-                m.alternative.trim() !== m.corrections?.trim() &&
-                m.alternative.trim().toLowerCase() !==
-                  nextMessage?.original?.trim().toLowerCase() && (
+                !isSimilar(m.alternative, m.corrections) && (
                   <div className={styles.optionBlock}>
                     <button
                       className={styles.optionBtn}
                       onClick={() => speak(m.alternative)}
                       disabled={speaking}
                     >
-                      <Volume2 size={16} style={{ marginRight: "5px" }} /> Natural alternative
+                      <Volume2
+                        size={16}
+                        style={{ marginRight: "5px" }}
+                      />{" "}
+                      Natural alternative
                     </button>
                     <p className={styles.subText}>{m.alternative}</p>
                   </div>
@@ -307,3 +397,4 @@ const Message = React.memo(function Message({
     </div>
   );
 });
+

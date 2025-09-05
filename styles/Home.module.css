@@ -18,6 +18,11 @@
   margin-bottom: 20px;
 }
 
+.containerBtn {
+  display: flex;
+  gap:5px;
+}
+
 .talkButton {
   background: linear-gradient(90deg, #06b6d4, #3b82f6);
   color: white;
@@ -29,7 +34,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   display: block;
-  margin: 0 auto 20px auto;
+  margin: 0 0 20px 0;
 }
 
 .talkButton:hover {
@@ -38,12 +43,14 @@
 }
 
 .chatBox {
-  padding: 20px;
   flex: 1;
   overflow-y: auto;
-  max-width:100%;
-  margin-bottom:20px;
+  max-width: 100%;
+  margin-bottom: 20px;
+
+  padding: 20px 0px 0; /* spațiu rezervat pentru input bar */
 }
+
 
 @media screen and (max-width: 600px) {
   .container {
@@ -54,7 +61,7 @@
   }
   .containerHeader {
     position: fixed;
-    top:0;
+    top:30;
     left:0;
     width:100%;
     background: #0f172a;
@@ -63,7 +70,7 @@
   .chatBox {
     padding: 0px;
     margin-bottom:0px;
-    margin-top:145px;
+    margin-top:120px;
   }
 }
 
@@ -234,5 +241,322 @@
   margin-right: 6px;
   font-size: 1rem;
 }
+
+
+
+
+/* input area */
+.inputBar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-top: 1px solid #333;
+  background: #0f172a;
+
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+
+  width: 100%;
+  max-width: 640px;   /* aceeași limită ca .container */
+  z-index: 100;
+}
+
+.textInput {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 20px;
+  border: 1px solid #444;
+  background: #1e293b;
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  min-width: 0;
+}
+
+.sendBtn {
+  background: #3b82f6;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  flex-shrink: 0;
+}
+
+.sendBtn:hover {
+  background: #2563eb;
+}
+
+@media screen and (max-width: 600px) {
+  .inputBar {
+    position: sticky;
+  }
+}
+
+
+
+
+
+/* === NAVBAR GENERAL === */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0px;
+  background: #0f172a;
+  border-bottom: none;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+
+.logo a {
+  color: #38bdf8;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* === MENU === */
+.menu {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu li {
+  position: relative;
+}
+
+.menu li button {
+  background: none;
+  border: none;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.menu li button:hover {
+  color: #38bdf8;
+}
+
+/* === SUBMENU DESKTOP === */
+.dropdownMenu {
+  display: none;
+  position: absolute;
+  top: 18px;
+  left: 0;
+  background: #1e293b;
+  border-radius: 8px;
+  padding: 10px;
+  list-style: none;
+  min-width: 180px;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 250;
+}
+
+/* Hover desktop → afișează submeniul */
+@media (min-width: 769px) {
+  .dropdown:hover .dropdownMenu {
+    display: flex;
+  }
+}
+
+.dropdownMenu li a {
+  text-decoration: none;
+  color: white;
+  font-size: 0.9rem;
+  padding: 6px 8px;
+  border-radius: 6px;
+  display: block;
+}
+
+.dropdownMenu li a:hover {
+  background: #334155;
+  color: #38bdf8;
+}
+
+/* === LOGIN ICON === */
+.loginIcon {
+  color: white;
+  cursor: pointer;
+  margin-left: 20px;
+}
+
+/* === HAMBURGER === */
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+/* === RESPONSIVE (MOBILE) === */
+@media (max-width: 768px) {
+  .menu {
+    display: none;
+    flex-direction: column;
+    position: fixed;
+    top: 55px;
+    left: 0;
+    background: #0f172a;
+    width: 100%;
+    padding: 15px 20px;
+    border-bottom: 1px solid #333;
+  }
+
+  .menuOpen {
+    display: flex;
+  }
+
+  /* Submeniu implicit colapsat */
+  .dropdownMenu {
+    display: none;
+    position: relative;
+    top: 0;
+    background: #1e293b;
+    padding: 8px;
+    border-radius: 6px;
+    margin-top: 5px;
+  }
+
+  /* Submeniu activat prin click */
+  .dropdownOpen {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .navbar {
+    padding: 15px 20px !important;
+  }
+
+  .loginIcon {
+    position: absolute;
+    right: 60px;
+  }
+
+  .hamburger {
+    display: block;
+  }
+}
+
+
+/* === FOOTER === */
+.footer {
+  background: #1e293b;
+  color: #94a3b8;
+  padding: 24px 0;
+  margin-top: 48px;
+  width: 100%;
+}
+
+.footerContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.footerLogo a {
+  color: #38bdf8;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.footerLinks {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.footerLinks a {
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footerLinks a:hover {
+  color: #38bdf8;
+}
+
+.footerForm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.footerLabel {
+  font-size: 0.9rem;
+  color: #cbd5e1;
+}
+
+.formRow {
+  display: flex;
+  gap: 8px;
+}
+
+.footerInput {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: white;
+  outline: none;
+}
+
+.footerButton {
+  background: #3b82f6;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.footerButton:hover {
+  background: #2563eb;
+}
+
+/* Responsive footer */
+@media (min-width: 640px) {
+  .footerContainer {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footerLinks {
+    justify-content: flex-start;
+  }
+
+  .footerForm {
+    margin: 0;
+  }
+}
+
 
 
