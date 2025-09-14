@@ -1,5 +1,5 @@
 .premiumContainer {
-  max-width: 1400px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 60px 20px;
   text-align: center;
@@ -36,14 +36,15 @@
 }
 
 .planName {
-display: inline-block;
-    padding: 5px 10px;
-    font-size: 1rem;
-    border-radius: 10px;
-    font-weight: 100;
-    background: white;
-    color: black;
+    color: white;
+    background: transparent;
+    border-radius: 5px;
     margin-bottom: 10px;
+    padding: 5px 10px;
+    font-size: .7rem;
+    font-weight: 100;
+    display: inline-block;
+    border: .5px solid white;
 }
 
 .price {
@@ -63,11 +64,11 @@ display: inline-block;
   margin: 15px 0 25px 0;
   padding: 10px 20px;
   border-radius: 8px;
-  border: 1px solid #22c55e;
-  background: transparent;
-  color: #22c55e;
+  background: #22c55e;
+  color: white;
   font-weight: 600;
   cursor: pointer;
+  border:none;
 }
 
 .btn:hover {
@@ -80,9 +81,6 @@ display: inline-block;
   border: none;
 }
 
-.btnPrimary:hover {
-  background: #16a34a;
-}
 
 .features {
   list-style: none;
@@ -119,4 +117,40 @@ display: inline-block;
   .features li {
     text-align: left;
   }
+}
+
+
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modalContent {
+  background: #0f172a;
+  padding: 40px;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  color: white;
+}
+
+.closeBtn {
+  position: absolute;
+  top: -45px;
+  right: 0px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: white;
+  cursor: pointer;
 }

@@ -1,5 +1,29 @@
 export default async function handler(req, res) {
-  const { original, corrected } = req.body;
+  const { original, corrected, language } = req.body;
+
+    // default la engleză dacă nu vine nimic
+  const targetLang = language || "en";
+
+const langMessages = {
+  en: {
+    name: "English",
+    warning: "Your sentence is not in English. Please write in English to get corrections."
+  },
+  fr: {
+    name: "French",
+    warning: "Votre phrase n’est pas en français. Veuillez écrire en français pour obtenir des corrections."
+  },
+  de: {
+    name: "German",
+    warning: "Ihr Satz ist nicht auf Deutsch. Bitte schreiben Sie auf Deutsch, um Korrekturen zu erhalten."
+  },
+  ro: {
+    name: "Romanian",
+    warning: "Propoziția ta nu este în română. Te rog să scrii în română pentru a primi corecturi."
+  }
+};
+
+  const langConfig = langMessages[targetLang] || langMessages["en"];
 
   // 🔹 Funcție pentru normalizare: ignorăm punctuația și majusculele
   const normalize = (str) =>
@@ -35,19 +59,30 @@ export default async function handler(req, res) {
           {
             role: "system",
             content: `
-You are an English grammar correction assistant.
+You are a grammar correction assistant for ${langConfig.name}.
 
-Rules for evaluation:
+If the input is NOT written in ${langConfig.name}, do NOT translate it.  
+Instead, return this JSON immediately:  
+{
+  "explanation": "${langConfig.warning}",
+  "corrections": "",
+  "alternative": "",
+  "mistakes": []
+}
+
+
+Rules for evaluation (when input IS in ${langConfig.name}):
 - You will ALWAYS treat the input as an isolated, independent sentence. 
 - Do NOT connect it to any previous input.
 - Ignore punctuation completely. Never mention punctuation in the explanation or corrections.
+- Provide "corrections" and "alternative" always in ${langConfig.name}.
 - Ignore capitalization. Do not treat lowercase/uppercase differences as errors (e.g., sentence starting with lowercase is acceptable).
-- Accept both single-word and two-word variants as correct if both are common in English (e.g., "Goodnight" and "Good night").
+- Accept both single-word and two-word variants as correct if both are common in - Provide "corrections" and "alternative" always in ${langConfig.name}. (e.g., "Goodnight" and "Good night").
 - Accept common variations with apostrophes, hyphens, or shortened forms (e.g., "rock’n’roll" and "rock and roll", "e-mail" and "email"). Do not treat these as mistakes.
 - Accept both American and British spelling variations as correct (e.g., "color/colour", "organize/organise").
 - Accept plural variations and regional alternatives as correct (e.g., "cactuses/cacti", "indexes/indices", "math/math(s)").
 - Accept abbreviations and acronyms in any common form (e.g., "USA/U.S.A.", "OK/O.K.").
-- Accept contractions (I'm, don't, won't, etc.) as correct English.
+- Accept contractions (I'm, don't, won't, etc.) as correct - Provide "corrections" and "alternative" always in ${langConfig.name}.
 - Focus ONLY on grammar, spelling, and word order errors.
 - Politeness, formality, or style (like adding "please") are NOT errors.
 - "corrections" must always be the FULLY CORRECT version of the original grammar (never add words like "please").

@@ -1,6 +1,6 @@
 .container {
   border-radius: 20px;
-  width: 600px;
+  max-width: 1000px;
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -45,10 +45,14 @@
 .chatBox {
   flex: 1;
   overflow-y: auto;
-  max-width: 100%;
+  max-width: 80%;
   margin-bottom: 20px;
-
+  margin: auto;
   padding: 20px 0px 0; /* spațiu rezervat pentru input bar */
+}
+
+@media screen and (max-width: 1000px) {
+  .container {border:none;}
 }
 
 
@@ -56,8 +60,6 @@
   .container {
     max-width:600px;
     width:unset;
-    height: 100dvh;
-    border:none;
   }
   .containerHeader {
     position: fixed;
@@ -71,6 +73,7 @@
     padding: 0px;
     margin-bottom:0px;
     margin-top:120px;
+    max-width:100%;
   }
 }
 
@@ -80,7 +83,7 @@
   display: flex;
   align-items: center;     /* aliniere verticală */
   justify-content: space-between; /* text la stânga, bifa la dreapta */
-  background: #ffcc00;     /* păstrezi fundalul galben */
+  background: orange;     /* păstrezi fundalul galben */
   padding: 8px 12px;
   border-radius: 6px;
   color: #1e293b;
@@ -251,17 +254,16 @@
   align-items: center;
   gap: 10px;
   padding: 10px;
-  border-top: 1px solid #333;
   background: #0f172a;
 
   position: fixed;
-  bottom: 0;
+  bottom: 20px;
   left: 0;
   right: 0;
   margin: 0 auto;
 
   width: 100%;
-  max-width: 640px;   /* aceeași limită ca .container */
+  max-width: 1020px;   /* aceeași limită ca .container */
   z-index: 100;
 }
 
@@ -295,10 +297,14 @@
   background: #2563eb;
 }
 
-@media screen and (max-width: 600px) {
-  .inputBar {
-    position: sticky;
+@media screen and (max-width: 1000px) {
+  .sendBtn {
+    margin-right:20px;
   }
+}
+
+@media screen and (max-width: 600px) {
+
 }
 
 
@@ -369,7 +375,8 @@
   z-index: 250;
 }
 
-/* Hover desktop → afișează submeniul */
+
+
 @media (min-width: 769px) {
   .dropdown:hover .dropdownMenu {
     display: flex;
@@ -394,7 +401,24 @@
 .loginIcon {
   color: white;
   cursor: pointer;
-  margin-left: 20px;
+  padding-top:5px;
+}
+
+.soundIcon {
+    background: transparent;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    border: none;
+    position: relative;
+}
+
+.soundIcon svg {
+  width: 24px;
+  height: 24px;
 }
 
 /* === HAMBURGER === */
@@ -404,7 +428,71 @@
   border: none;
   color: white;
   cursor: pointer;
+  position: fixed;
+  top:20px;
+  right:22px;
 }
+
+
+/* === LANGUAGE SELECTOR === */
+.langWrapper {
+  position: relative;
+  margin-left: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.langIcon {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.langCode {
+  font-size: 10px;
+  font-weight: bold;
+  background: orange;
+  padding:2px 4px;
+  color:black;
+}
+
+.langDropdown {
+  display: none; /* 👈 ascuns implicit */
+  position: absolute;
+  top: 100%; /* mai sigur decât 30px */
+  left: 0;
+  background: #1e293b;
+  border-radius: 6px;
+  list-style: none;
+  padding: 5px 0;
+  margin: 0;
+  z-index: 1000;
+  width:150px;
+}
+
+
+.langDropdown li button {
+  background: none;
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+}
+
+.langDropdown li button:hover {
+  background: #1e293b;
+}
+
+.dropdownOpen {
+  display: block; /* 👈 activ */
+}
+
 
 /* === RESPONSIVE (MOBILE) === */
 @media (max-width: 768px) {
@@ -448,7 +536,20 @@
 
   .loginIcon {
     position: absolute;
-    right: 60px;
+    right: 75px;
+    margin-top:5px;
+  }
+
+  .soundIcon {
+    position: fixed;
+    right: 100px;
+    top: 22px;
+  }
+
+  .langWrapper {
+    position: fixed;
+    top: 22px;
+    right: 145px;
   }
 
   .hamburger {
@@ -557,6 +658,9 @@
     margin: 0;
   }
 }
+
+
+
 
 
 

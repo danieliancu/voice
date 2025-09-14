@@ -1,14 +1,22 @@
 import { useState, useEffect, useRef } from "react";
 import styles from "../styles/Home.module.css";
-import { Volume2, Check, Square, Mic, Pen, Send } from "lucide-react"; // ➕ Pen și Send
+import { Volume2, Check, Square, Mic, Pen, Send, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
+import { useSound } from "../lib/SoundContext";
+import { useLanguage } from "@/lib/LanguageContext";
 import React from "react";
+import PremiumModal from "@/components/PremiumModal";
+
+
+
 
 export default function Home() {
+  const [showPremium, setShowPremium] = useState(false);
   const [listening, setListening] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [writeMode, setWriteMode] = useState(false); // ➕ nou state
   const [inputText, setInputText] = useState(""); // ➕ text scris
+  const { language, voiceCode, introMessage, labels } = useLanguage();
   const [messages, setMessages] = useState([
     {
       role: "ai",
@@ -18,13 +26,32 @@ export default function Home() {
       mistakes: [],
       correct: false,
       intro: true,
-      text: "Hello! I’m your English correction assistant. Just tap the Talk or Write button below and I’ll help you correct your sentences."
+      text: introMessage, // 👈 vine direct din context
     }
   ]);
+
 
   const chatEndRef = useRef(null);
 
   let recognition;
+
+
+  useEffect(() => {
+  setMessages([
+    {
+      role: "ai",
+      explanation: "",
+      corrections: "",
+      alternative: "",
+      mistakes: [],
+      correct: false,
+      intro: true,
+      text: introMessage, // 👈 direct din context
+    }
+  ]);
+}, [language, introMessage]);
+
+
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -34,7 +61,7 @@ export default function Home() {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
     recognition = new SpeechRecognition();
-    recognition.lang = "en-US";
+    recognition.lang = voiceCode;
     recognition.continuous = false;
 
     recognition.onresult = async (event) => {
@@ -63,26 +90,30 @@ export default function Home() {
     setListening(false);
   };
 
-  const correctText = async (text) => {
-    try {
-      const res = await fetch("/api/correct", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
-      });
-      const data = await res.json();
-      return data.corrected || text;
-    } catch (err) {
-      console.error("Correction failed:", err);
-      return text;
-    }
-  };
+const correctText = async (text) => {
+  try {
+    const res = await fetch("/api/correct", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, language }), // 👈 trimitem limba
+    });
+    const data = await res.json();
+    return data.corrected || text;
+  } catch (err) {
+    console.error("Correction failed:", err);
+    return text;
+  }
+};
+
+
+
+
 
   const getAIResponse = async (original, corrected) => {
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ original, corrected }),
+      body: JSON.stringify({ original, corrected, language }), // 👈 trimitem limba
     });
     const data = await res.json();
 
@@ -132,14 +163,21 @@ export default function Home() {
     }
   };
 
+
+  const { soundOn } = useSound();
+
   const speak = (msg) => {
-    if (!msg) return;
+    if (!msg || !soundOn) {
+      window.speechSynthesis.cancel(); // 👈 dacă e off, taie doar vocea
+      return;
+    }
+
     const textWithPauses = msg.replace(/\.\s+/g, ".\n\n");
     const synth = window.speechSynthesis;
     synth.cancel();
     const utter = new SpeechSynthesisUtterance(textWithPauses);
 
-    utter.lang = "en-US";
+    utter.lang = voiceCode;
     utter.rate = 1;
     utter.pitch = 1;
 
@@ -197,73 +235,116 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <div className={styles.containerHeader}>
+        <div style={{display: "flex", gap: "10px", justifyContent: "center", marginTop: "40px",}}>
+            {/* Buton TALK */}
+            <motion.button
+              onClick={listening ? stopListening : startListening}
+              className={styles.talkButton}
+              disabled={speaking || writeMode} // dezactivat dacă e în Write
+              style={{background: listening ? "rgb(245, 158, 11)" : "", }}>
+              {listening ? (
+                <span className={styles.containerBtn}>
+                  <Square size={18} style={{ fill: "red" }} /> {labels.stop}
+                </span>
+              ) : (
+                <span className={styles.containerBtn}>
+                  <Mic size={18} /> {labels.talk}
+                </span>
+              )}
+            </motion.button>
 
-        <div style={{ display: "flex", gap: "10px", justifyContent: "center", marginTop: "40px" }}>
-          {/* Buton TALK */}
-          <motion.button
-            onClick={listening ? stopListening : startListening}
-            className={styles.talkButton}
-            disabled={speaking || writeMode} // dezactivat dacă e în Write
-          >
-            {listening ? (
-              <span className={styles.containerBtn}><Square size={18} style={{ fill: "red" }} /> Stop</span>
-            ) : (
-              <span className={styles.containerBtn}><Mic size={18} /> Talk</span>
-            )}
-          </motion.button>
+            {/* Buton WRITE */}
+            <button
+              onClick={() => setWriteMode((prev) => !prev)}
+              className={styles.talkButton}
+              style={{background: writeMode? "#f59e0b" : "linear-gradient(90deg,#06b6d4,#3b82f6)", }}>
+              <span className={styles.containerBtn}>
+                <Pen size={18} /> {labels.write} 
+              </span>
+            </button>
 
-          {/* Buton WRITE */}
-          <button
-            onClick={() => setWriteMode((prev) => !prev)}
-            className={styles.talkButton}
-            style={{
-              background: writeMode ? "#f59e0b" : "linear-gradient(90deg,#06b6d4,#3b82f6)"
-            }}
-          >
-            <span className={styles.containerBtn}>
-              <Pen size={18} /> Write {writeMode ? "On" : ""}
-            </span>
-          </button>
+            {/* Buton LEARN */}
+            <button
+              onClick={() => setShowPremium(true)}
+              className={styles.talkButton}>
+              <span className={styles.containerBtn}>
+                <BookOpen size={18} /> {labels.learn}
+              </span>
+            </button>
+
+            {/* Modal Premium */}
+            <PremiumModal isOpen={showPremium} onClose={() => setShowPremium(false)} />
+
         </div>
+
+
+
+
       </div>
 
       {/* Chat messages */}
-      <div className={styles.chatBox}>
-        {messages.map((m, i) => (
-          <Message
-            key={i}
-            m={m}
-            i={i}
-            nextMessage={messages[i + 1]}
-            speak={speak}
-            highlightMistakes={highlightMistakes}
-            speaking={speaking}
-          />
-        ))}
-        <div ref={chatEndRef} />
-      </div>
+<div
+  className={styles.chatBox}
+  style={{ marginBottom: writeMode ? "30px" : "0" }}
+>
+  {messages.map((m, i) => (
+    <Message
+      key={i}
+      m={m}
+      i={i}
+      nextMessage={messages[i + 1]}
+      speak={speak}
+      highlightMistakes={highlightMistakes}
+      speaking={speaking}
+      labels={labels}   // 👈 trimitem labels ca prop
+    />
+  ))}
+  <div ref={chatEndRef} />
+</div>
+
 
       {/* INPUT WhatsApp-like */}
-      {writeMode && (
-        <div className={styles.inputBar}>
-          <input
-            type="text"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder="Type a message..."
-            className={styles.textInput}
-            onKeyDown={(e) => e.key === "Enter" && handleSend()}
-            name="no-autofill"   // 👈 nume non-standard
-            autoComplete="new-password" // 👈 hack des folosit
-            autoCorrect="off"
-            autoCapitalize="off"
-            spellCheck="false"
-          />
-          <button onClick={handleSend} className={styles.sendBtn}>
-            <Send size={20} />
-          </button>
-        </div>
-      )}
+{writeMode && (
+  <div className={styles.inputBar}>
+    {/* 👇 câmp dummy care „mănâncă” autocomplete-ul */}
+    <input
+      type="text"
+      style={{ display: "none" }}
+      autoComplete="username"
+    />
+
+    <textarea
+      value={inputText}
+      onChange={(e) => setInputText(e.target.value)}
+      placeholder={labels.placeholder}
+      className={styles.textInput}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          handleSend();
+        }
+      }}
+      rows={1}
+      autoComplete="new-password" // 👈 hack sigur
+      autoCorrect="off"
+      autoCapitalize="off"
+      spellCheck="false"
+      name="fake-field"
+      id="fake-field"
+      style={{
+        resize: "none",
+        overflow: "hidden",
+      }}
+    />
+
+    <button onClick={handleSend} className={styles.sendBtn}>
+      <Send size={20} />
+    </button>
+  </div>
+)}
+
+
+
     </div>
   );
 }
@@ -275,6 +356,7 @@ const Message = React.memo(function Message({
   speak,
   highlightMistakes,
   speaking,
+  labels, // 👈 primim labels direct ca prop
 }) {
   // Funcție de normalizare
   const normalize = (text) =>
@@ -331,7 +413,7 @@ const Message = React.memo(function Message({
               transition={{ duration: 0.4, ease: "easeOut" }}
               style={{ display: "inline-flex", alignItems: "center" }}
             >
-              <Check size={24} strokeWidth={3} color="limegreen" />
+              <Check size={24} strokeWidth={3} color="green" />
             </motion.span>
           )}
         </div>
@@ -367,7 +449,7 @@ const Message = React.memo(function Message({
                         size={16}
                         style={{ marginRight: "5px" }}
                       />{" "}
-                      Corrections
+                      {labels.corrections}
                     </button>
                     <p className={styles.subText}>{m.corrections}</p>
                   </div>
@@ -385,7 +467,7 @@ const Message = React.memo(function Message({
                         size={16}
                         style={{ marginRight: "5px" }}
                       />{" "}
-                      Natural alternative
+                      {labels.alternative}
                     </button>
                     <p className={styles.subText}>{m.alternative}</p>
                   </div>

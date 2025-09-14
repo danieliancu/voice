@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: "Inter", "Segoe UI", sans-serif;
@@ -8,6 +12,11 @@ body {
   align-items:flex-start;
   height: 100vh;
 }
+
+#__next {
+  width:1000px;
+}
+
 @media screen and (max-width: 600px) {
   #__next {
     width: 100%;
@@ -48,4 +57,17 @@ body {
 /* globals.css */
 .caveat {
   font-family: 'Caveat', cursive;
+}
+
+
+
+
+form input,
+form button
+{
+  padding:10px;
+}
+
+textarea {
+  font-family: "Inter", "Segoe UI", sans-serif;
 }
