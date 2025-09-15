@@ -329,6 +329,8 @@
   font-size: 1.4rem;
   font-weight: 700;
   text-decoration: none;
+  position: relative;
+  top: 4px;
 }
 
 /* === MENU === */
@@ -338,6 +340,7 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  z-index: 2;
 }
 
 .menu li {
@@ -431,6 +434,7 @@
   position: fixed;
   top:20px;
   right:22px;
+  z-index: 3;
 }
 
 
@@ -497,19 +501,46 @@
 /* === RESPONSIVE (MOBILE) === */
 @media (max-width: 768px) {
   .menu {
-    display: none;
     flex-direction: column;
     position: fixed;
-    top: 55px;
+    top: 0;
     left: 0;
-    background: #0f172a;
-    width: 100%;
-    padding: 15px 20px;
-    border-bottom: 1px solid #333;
+    background: #fff; /* 👈 alb */
+    padding: 35px 20px;
+    height: 100vh;
+    width: 80%;
+
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
   }
 
   .menuOpen {
-    display: flex;
+    transform: translateX(0);
+  }
+
+  /* butoane meniu principale */
+  .menu li button {
+    color: #000; /* 👈 text negru */
+    font-size:16px;
+  }
+
+  .menu li button:hover {
+    color: #1e293b
+  }
+
+  /* dropdownuri */
+  .dropdownMenu {
+    background: #f9f9f9; /* gri foarte deschis */
+  }
+
+  .dropdownMenu li a {
+    color: white; /* text negru */
+    font-size:16px;
+  }
+
+  .dropdownMenu li a:hover {
+    background: #eee;
+    color: #2563eb;
   }
 
   /* Submeniu implicit colapsat */
@@ -537,7 +568,7 @@
   .loginIcon {
     position: absolute;
     right: 75px;
-    margin-top:5px;
+    margin-top:10px;
   }
 
   .soundIcon {
@@ -664,3 +695,13 @@
 
 
 
+/* === OVERLAY === */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4); /* fundal semi-transparent */
+  z-index: 0; /* sub meniu */
+}

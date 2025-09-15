@@ -80,6 +80,8 @@ useEffect(() => {
               <li><a onClick={() => handleNavClick("#")}>Examples</a></li>
               <li><a onClick={() => handleNavClick("#")}>Blog / Resources</a></li>
             </ul>
+
+
           </li>
 
           {/* Pricing */}
@@ -112,6 +114,8 @@ useEffect(() => {
             </ul>
           </li>
         </ul>
+        {/* Overlay când meniul mobil e deschis */}
+        {open && <div className={styles.overlay} onClick={() => setOpen(false)}></div>}
 
 {/* Language Selector */}
 <div className={styles.langWrapper}>

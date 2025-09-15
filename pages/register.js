@@ -24,7 +24,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "50px auto", color: "white" }}>
+    <div style={{ maxWidth: "400px", margin: "50px auto", color: "white", padding:"0 20px" }}>
       <h1>Register</h1>
       <form onSubmit={handleRegister}>
         <input
