@@ -5,7 +5,7 @@
   flex-direction: column;
   height: 100vh;
   padding:0 20px;
-  height: 80vh;
+  height: 83vh;
   border: 1px solid white;
   position:relative
 }
@@ -52,7 +52,11 @@
 }
 
 @media screen and (max-width: 1000px) {
-  .container {border:none;}
+  .container {border:none;height: 90vh;}
+  .chatBox {
+        border:1px solid white;
+    border-radius:10px;
+  }
 }
 
 
@@ -60,6 +64,7 @@
   .container {
     max-width:600px;
     width:unset;
+    
   }
   .containerHeader {
     position: fixed;
@@ -67,13 +72,13 @@
     left:0;
     width:100%;
     background: #0f172a;
-    border-bottom:1px solid white;
   }
   .chatBox {
-    padding: 0px;
+    padding: 10px 20px;
     margin-bottom:0px;
-    margin-top:120px;
+    margin-top:80px;
     max-width:100%;
+
   }
 }
 
@@ -299,7 +304,7 @@
 
 @media screen and (max-width: 1000px) {
   .sendBtn {
-    margin-right:20px;
+    margin-right:10px;
   }
 }
 
@@ -458,9 +463,8 @@
 .langCode {
   font-size: 10px;
   font-weight: bold;
-  background: orange;
-  padding:2px 4px;
-  color:black;
+  padding:2px 0px;
+  color:white;
 }
 
 .langDropdown {

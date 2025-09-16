@@ -29,12 +29,12 @@ export default function Home() {
 
   const [copied, setCopied] = useState(null); // ➕ stare pentru copiere
 
-  // pentru copy în clipboard
-  const handleCopy = (text) => {
-    navigator.clipboard.writeText(text);
-    setCopied(text);
-    setTimeout(() => setCopied(null), 2000); // mesaj dispare după 2 sec
-  };
+// pentru copy în clipboard
+const handleCopy = (text, key) => {
+  navigator.clipboard.writeText(text);
+  setCopied(key); // salvăm un ID unic, nu textul
+  setTimeout(() => setCopied(null), 2000);
+};
 
   const chatEndRef = useRef(null);
 
@@ -278,7 +278,7 @@ export default function Home() {
       {/* Chat messages */}
       <div
         className={styles.chatBox}
-        style={{ marginBottom: writeMode ? "30px" : "0" }}
+        style={{ marginBottom: writeMode ? "60px" : "0" }}
       >
         {messages.map((m, i) => (
           <Message
@@ -289,9 +289,9 @@ export default function Home() {
             speak={speak}
             highlightMistakes={highlightMistakes}
             speaking={speaking}
-            labels={labels}   // 👈 trimitem labels ca prop
-            handleCopy={handleCopy} // ➕ trimitem funcția
-            copied={copied}         // ➕ trimitem starea
+            labels={labels}
+            handleCopy={handleCopy}
+            copied={copied}
           />
         ))}
         <div ref={chatEndRef} />
@@ -406,7 +406,7 @@ const Message = React.memo(function Message({
               transition={{ duration: 0.4, ease: "easeOut" }}
               style={{ display: "inline-flex", alignItems: "center" }}
             >
-              <Check size={24} strokeWidth={3} color="green" />
+              <Check size={20} strokeWidth={3} color="green" />
             </motion.span>
           )}
         </div>
@@ -445,13 +445,13 @@ const Message = React.memo(function Message({
                         style={{ marginLeft: "auto", cursor: "pointer" }}
                         onClick={(e) => {
                           e.stopPropagation(); // prevenim trigger pe speak
-                          handleCopy(m.corrections);
+                          handleCopy(m.corrections, `${i}-corrections`);
                         }}
                       />
                     </button>
                     <p className={styles.subText}>
                       {m.corrections}
-                      {copied === m.corrections && (
+                      {copied === `${i}-corrections` && (
                         <span className={styles.copied}> Copied!</span>
                       )}
                     </p>
@@ -472,13 +472,13 @@ const Message = React.memo(function Message({
                       style={{ marginLeft: "auto", cursor: "pointer" }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleCopy(m.alternative);
+                        handleCopy(m.alternative, `${i}-alternative`);
                       }}
                     />
                   </button>
                   <p className={styles.subText}>
                     {m.alternative}
-                    {copied === m.alternative && (
+                    {copied === `${i}-alternative` && (
                       <span className={styles.copied}> Copied!</span>
                     )}
                   </p>
