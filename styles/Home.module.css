@@ -45,11 +45,12 @@
 .chatBox {
   flex: 1;
   overflow-y: auto;
-  max-width: 80%;
-  margin-bottom: 20px;
-  margin: auto;
-  padding: 20px 0px 0; /* spațiu rezervat pentru input bar */
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto 20px;
+  padding: 20px 0 0;
 }
+
 
 @media screen and (max-width: 1000px) {
   .container {border:none;height: 90vh;}

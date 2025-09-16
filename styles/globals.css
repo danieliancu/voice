@@ -7,15 +7,16 @@ body {
   font-family: "Inter", "Segoe UI", sans-serif;
   background: #0f172a;
   color: #f8fafc;
-  display: flex;
-  justify-content: center;
-  align-items:flex-start;
-  height: 100vh;
+  min-height: 100vh;   /* în loc de height fix */
+  display: block;      /* scoatem flex-ul global */
 }
 
 #__next {
-  width:1000px;
+  max-width: 1000px;   /* în loc de width fix */
+  margin: 0 auto;      /* centrează pe orizontală */
+  width: 100%;
 }
+
 
 @media screen and (max-width: 600px) {
   #__next {
