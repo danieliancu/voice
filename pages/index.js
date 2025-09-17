@@ -230,7 +230,7 @@ const handleCopy = (text, key) => {
   return (
     <div className={styles.container}>
       <div className={styles.containerHeader}>
-        <div style={{ display: "flex", gap: "10px", justifyContent: "center", marginTop: "40px" }}>
+        <div className={ styles.containerBtn }>
           {/* Buton TALK */}
           <motion.button
             onClick={listening ? stopListening : startListening}
@@ -278,7 +278,9 @@ const handleCopy = (text, key) => {
       {/* Chat messages */}
       <div
         className={styles.chatBox}
-        style={{ marginBottom: writeMode ? "60px" : "0" }}
+        style={{
+  marginBottom: writeMode && window.innerWidth < 1000 ? "60px" : "0"
+}}
       >
         {messages.map((m, i) => (
           <Message

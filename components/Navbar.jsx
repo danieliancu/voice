@@ -52,154 +52,157 @@ useEffect(() => {
   };
 
   return (
-    <nav className={styles.navbar}>
-      {/* Logo */}
-      <div className={styles.logo}>
-        <Link href="/" className={styles.logoLink}>
-          fix<span style={{ color: "orange" }}>bly</span>.com
-        </Link>
-      </div>
+    <div style={{position: "relative",zIndex: 400,height: "60px", width:"100%"}}>
 
-      <div style={{ display: "flex", alignItems: "center" }}>
-        {/* Meniu */}
-        <ul className={`${styles.menu} ${open ? styles.menuOpen : ""}`}>
-          {/* Features */}
-          <li className={styles.dropdown}>
-            <button
-              onClick={() => toggleDropdown("features")}
-              className={styles.dropdownBtn}
-            >
-              Features <ChevronDown size={14} />
-            </button>
-            <ul
-              className={`${styles.dropdownMenu} ${
-                activeDropdown === "features" ? styles.dropdownOpen : ""
-              }`}
-            >
-              <li><a onClick={() => handleNavClick("#")}>How it works</a></li>
-              <li><a onClick={() => handleNavClick("#")}>Examples</a></li>
-              <li><a onClick={() => handleNavClick("#")}>Blog / Resources</a></li>
-            </ul>
+      <nav className={styles.navbar}>
+        {/* Logo */}
+        <div className={styles.logo}>
+          <Link href="/" className={styles.logoLink}>
+            fix<span style={{ color: "orange" }}>bly</span>.com
+          </Link>
+        </div>
 
-
-          </li>
-
-          {/* Pricing */}
-          <li>
-            <button
-              onClick={() => handleNavClick("/why-premium")}
-              className={styles.dropdownBtn}
-            >
-              Pricing
-            </button>
-          </li>
-
-          {/* Support */}
-          <li className={styles.dropdown}>
-            <button
-              onClick={() => toggleDropdown("support")}
-              className={styles.dropdownBtn}
-            >
-              Support <ChevronDown size={14} />
-            </button>
-            <ul
-              className={`${styles.dropdownMenu} ${
-                activeDropdown === "support" ? styles.dropdownOpen : ""
-              }`}
-            >
-              <li><a onClick={() => handleNavClick("#")}>FAQ</a></li>
-              <li><a onClick={() => handleNavClick("#")}>Contact</a></li>
-              <li><a onClick={() => handleNavClick("#")}>Referral Program</a></li>
-              <li><a onClick={() => handleNavClick("#")}>My Account</a></li>
-            </ul>
-          </li>
-        </ul>
-        {/* Overlay când meniul mobil e deschis */}
-        {open && <div className={styles.overlay} onClick={() => setOpen(false)}></div>}
-
-{/* Language Selector */}
-<div className={styles.langWrapper}>
-  <button
-    onClick={() => {
-      if (!loggedIn) {
-        setShowUserModal(true); 
-        return;
-      }
-      setShowLangMenu((prev) => !prev);
-    }}
-    className={styles.langIcon}
-    aria-label="Select language"
-  >
-    <Globe size={24} />
-    <span className={styles.langCode}>{language.toUpperCase()}</span>
-    <ChevronDown size={14} />
-  </button>
-
-  <ul
-    className={`${styles.langDropdown} ${
-      loggedIn && showLangMenu ? styles.dropdownOpen : ""
-    }`}
-    style={{ display: loggedIn ? "" : "none" }} // 👈 ascunde complet dacă nu e logat
-  >
-    {availableLanguages.map((lang) => (
-      <li key={lang.code}>
-        <button
-          onClick={() => {
-            setLanguage(lang.code);
-            setShowLangMenu(false);
-          }}
-        >
-          {lang.label}
-        </button>
-      </li>
-    ))}
-  </ul>
-</div>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {/* Meniu */}
+          <ul className={`${styles.menu} ${open ? styles.menuOpen : ""}`}>
+            {/* Features */}
+            <li className={styles.dropdown}>
+              <button
+                onClick={() => toggleDropdown("features")}
+                className={styles.dropdownBtn}
+              >
+                Features <ChevronDown size={14} />
+              </button>
+              <ul
+                className={`${styles.dropdownMenu} ${
+                  activeDropdown === "features" ? styles.dropdownOpen : ""
+                }`}
+              >
+                <li><a onClick={() => handleNavClick("#")}>How it works</a></li>
+                <li><a onClick={() => handleNavClick("#")}>Examples</a></li>
+                <li><a onClick={() => handleNavClick("#")}>Blog / Resources</a></li>
+              </ul>
 
 
+            </li>
 
+            {/* Pricing */}
+            <li>
+              <button
+                onClick={() => handleNavClick("/why-premium")}
+                className={styles.dropdownBtn}
+              >
+                Pricing
+              </button>
+            </li>
 
-        {/* Toggle Sound */}
-        <button
-          onClick={() => setSoundOn((prev) => !prev)}
-          className={styles.soundIcon}
-          aria-label="Toggle sound"
-        >
-          {soundOn ? <Volume2 /> : <VolumeX />}
-        </button>
+            {/* Support */}
+            <li className={styles.dropdown}>
+              <button
+                onClick={() => toggleDropdown("support")}
+                className={styles.dropdownBtn}
+              >
+                Support <ChevronDown size={14} />
+              </button>
+              <ul
+                className={`${styles.dropdownMenu} ${
+                  activeDropdown === "support" ? styles.dropdownOpen : ""
+                }`}
+              >
+                <li><a onClick={() => handleNavClick("#")}>FAQ</a></li>
+                <li><a onClick={() => handleNavClick("#")}>Contact</a></li>
+                <li><a onClick={() => handleNavClick("#")}>Referral Program</a></li>
+                <li><a onClick={() => handleNavClick("#")}>My Account</a></li>
+              </ul>
+            </li>
+          </ul>
+          {/* Overlay când meniul mobil e deschis */}
+          {open && <div className={styles.overlay} onClick={() => setOpen(false)}></div>}
 
-        {/* Login Icon */}
-        <Link href="/user" className={styles.loginIcon}>
-          <div
-            style={
-              loggedIn
-                ? {
-                    background: "orange",
-                    borderRadius: "100%",
-                    color: "black",
-                    width: "25px",
-                    height: "25px",
-                    textAlign: "center",
-                  }
-                : {}
-            }
+  {/* Language Selector */}
+  <div className={styles.langWrapper}>
+    <button
+      onClick={() => {
+        if (!loggedIn) {
+          setShowUserModal(true); 
+          return;
+        }
+        setShowLangMenu((prev) => !prev);
+      }}
+      className={styles.langIcon}
+      aria-label="Select language"
+    >
+      <Globe size={24} />
+      <span className={styles.langCode}>{language.toUpperCase()}</span>
+      <ChevronDown size={14} />
+    </button>
+
+    <ul
+      className={`${styles.langDropdown} ${
+        loggedIn && showLangMenu ? styles.dropdownOpen : ""
+      }`}
+      style={{ display: loggedIn ? "" : "none" }} // 👈 ascunde complet dacă nu e logat
+    >
+      {availableLanguages.map((lang) => (
+        <li key={lang.code}>
+          <button
+            onClick={() => {
+              setLanguage(lang.code);
+              setShowLangMenu(false);
+            }}
           >
-            <User size={22} />
-          </div>
-        </Link>
-      </div>
+            {lang.label}
+          </button>
+        </li>
+      ))}
+    </ul>
+  </div>
 
-      {/* Hamburger (mobil) */}
-      <button
-        className={styles.hamburger}
-        onClick={() => setOpen(!open)}
-        aria-label="Toggle menu"
-      >
-        {open ? <X size={32} /> : <Menu size={32} />}
-      </button>
 
-      {/* 👇 Modal User */}
-      <UserModal isOpen={showUserModal} onClose={() => setShowUserModal(false)} />
-    </nav>
+
+
+          {/* Toggle Sound */}
+          <button
+            onClick={() => setSoundOn((prev) => !prev)}
+            className={styles.soundIcon}
+            aria-label="Toggle sound"
+          >
+            {soundOn ? <Volume2 /> : <VolumeX />}
+          </button>
+
+          {/* Login Icon */}
+          <Link href="/user" className={styles.loginIcon}>
+            <div
+              style={
+                loggedIn
+                  ? {
+                      background: "orange",
+                      borderRadius: "100%",
+                      color: "black",
+                      width: "25px",
+                      height: "25px",
+                      textAlign: "center",
+                    }
+                  : {}
+              }
+            >
+              <User size={22} />
+            </div>
+          </Link>
+        </div>
+
+        {/* Hamburger (mobil) */}
+        <button
+          className={styles.hamburger}
+          onClick={() => setOpen(!open)}
+          aria-label="Toggle menu"
+        >
+          {open ? <X size={32} /> : <Menu size={32} />}
+        </button>
+
+        {/* 👇 Modal User */}
+        <UserModal isOpen={showUserModal} onClose={() => setShowUserModal(false)} />
+      </nav>
+    </div>
   );
 }

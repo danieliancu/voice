@@ -53,13 +53,26 @@
 
 
 @media screen and (max-width: 1000px) {
-  .container {border:none;height: 90vh;}
+  .container {
+    border:none;
+    height: 90vh;
+    padding:0;
+  }
   .chatBox {
-        border:1px solid white;
-    border-radius:10px;
+    border: none;
+        border-top: 1px solid #fff;
+        border-radius: 0;
+        background: darkslategray;
   }
 }
 
+.containerBtn {
+  display: flex;
+  gap:10px;
+  justify-content: center;
+  top: 20px;
+
+}
 
 @media screen and (max-width: 600px) {
   .container {
@@ -68,19 +81,27 @@
     
   }
   .containerHeader {
-    position: fixed;
-    top:30;
+    position: relative;
+    top:0px;
     left:0;
     width:100%;
     background: #0f172a;
   }
   .chatBox {
     padding: 10px 20px;
-    margin-bottom:0px;
-    margin-top:80px;
+    margin:0px;
     max-width:100%;
 
   }
+
+
+}
+
+@media screen and (max-width: 1000px) {
+  .containerBtn {
+    top:5px;
+  }
+
 }
 
 
@@ -263,7 +284,7 @@
   background: #0f172a;
 
   position: fixed;
-  bottom: 20px;
+  bottom: 0px;
   left: 0;
   right: 0;
   margin: 0 auto;
@@ -320,13 +341,13 @@
 /* === NAVBAR GENERAL === */
 .navbar {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* 👈 logo în stânga, restul în dreapta */
   align-items: center;
-  padding: 14px 0px;
+  padding: 14px 20px; 
   background: #0f172a;
   border-bottom: none;
-  position: sticky;
   top: 0;
+  width: 100%;   /* 👈 important */
   z-index: 200;
 }
 
@@ -593,7 +614,7 @@
 
   .logo a {
     position: relative;
-    top: 8px;
+    top: 2px;
   }
 }
 
