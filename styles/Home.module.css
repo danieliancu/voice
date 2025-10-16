@@ -5,9 +5,10 @@
   flex-direction: column;
   height: 100vh;
   padding:0 20px;
-  height: 83vh;
+  height: 80vh;
   border: 1px solid white;
-  position:relative
+  position:relative;
+  margin-top:10px;
 }
 
 
@@ -101,7 +102,7 @@
     left:0;
     width:100%;
     background: #0f172a;
-    padding-top:0px !important;
+    padding-top:20px !important;
   }
   .chatBox {
     padding: 10px 20px;
@@ -298,13 +299,11 @@
   gap: 10px;
   padding: 10px;
   background: #0f172a;
-
   position: fixed;
-  bottom: 0px;
+  bottom: 20px;
   left: 0;
   right: 0;
   margin: 0 auto;
-
   width: 100%;
   max-width: 1020px;   /* aceeași limită ca .container */
   z-index: 100;
@@ -347,7 +346,10 @@
 }
 
 @media screen and (max-width: 600px) {
-
+  .inputBar {
+    margin-bottom:5px;
+    padding:0 20px;
+  }
 }
 
 
@@ -365,6 +367,11 @@
   top: 0;
   width: 100%;   /* 👈 important */
   z-index: 200;
+  position: relative; /* allow absolute children if needed */
+}
+
+.logo {
+  margin-bottom: 7px;
 }
 
 .logo a {
@@ -473,10 +480,9 @@
   border: none;
   color: white;
   cursor: pointer;
-  position: fixed;
-  top:18px;
-  right:22px;
-  z-index: 3;
+  position: static; /* scrolls away with navbar */
+  margin-left:10px;
+  margin-top: 5px;
 }
 
 
@@ -607,21 +613,17 @@
   }
 
   .loginIcon {
-    position: absolute;
-    right: 75px;
-    margin-top:10px;
+    position: relative;
+    right: 0px;
+    margin-top:0px;
   }
 
   .soundIcon {
-    position: fixed;
-    right: 100px;
-    top: 22px;
+    position: static; /* scrolls away with navbar */
   }
 
   .langWrapper {
-    position: fixed;
-    top: 22px;
-    right: 145px;
+    position: static; /* scrolls away with navbar */
   }
 
   .hamburger {

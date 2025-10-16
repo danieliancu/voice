@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import styles from "../styles/Home.module.css";
+import stylesPremium from "../styles/Premium.module.css";
 import { Volume2, Check, Square, Mic, Pen, Send, BookOpen, Copy } from "lucide-react";
 import { motion } from "framer-motion";
 import { useSound } from "../lib/SoundContext";
@@ -104,8 +105,8 @@ const handleCopy = (text, key) => {
       recognition.stop();
       setListening(false);
 
-      const corrected = await correctText(transcript);
-      getAIResponse(transcript, corrected);
+      const corrected = await correctText(transcript, "voice");
+      getAIResponse(transcript, corrected, "voice");
     };
 
     recognition.start();
@@ -117,12 +118,12 @@ const handleCopy = (text, key) => {
     setListening(false);
   };
 
-  const correctText = async (text) => {
+  const correctText = async (text, mode = "text") => {
     try {
       const res = await fetch("/api/correct", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, language }), // 👈 trimitem limba
+        body: JSON.stringify({ text, language, mode }), // 👈 trimitem limba + modul (voice/text)
       });
       const data = await res.json();
       return data.corrected || text;
@@ -132,11 +133,11 @@ const handleCopy = (text, key) => {
     }
   };
 
-  const getAIResponse = async (original, corrected) => {
+  const getAIResponse = async (original, corrected, mode = "text") => {
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ original, corrected, language }), // 👈 trimitem limba
+      body: JSON.stringify({ original, corrected, language, mode }), // 👈 trimitem limba + modul
     });
     const data = await res.json();
 
@@ -248,8 +249,8 @@ const handleCopy = (text, key) => {
     setMessages((prev) => [...prev, originalMessage]);
 
     // trimitem în fundal la corectare și AI
-    const corrected = await correctText(messageToSend);
-    await getAIResponse(messageToSend, corrected);
+    const corrected = await correctText(messageToSend, "text");
+    await getAIResponse(messageToSend, corrected, "text");
   };
 
   // Show headings only initially; hide after first interaction or any non-intro message
@@ -263,8 +264,8 @@ const handleCopy = (text, key) => {
       <div className={styles.containerHeader}>
         {showWelcome && !hasRealMessage && (
           <div style={{ textAlign: "center", marginBottom: 12 }}>
-            <h1 className={styles.homeTitle}>{home?.title}</h1>
-            <h2 className={styles.homeSubtitle}>{home?.subtitle}</h2>
+            <h1 className={stylesPremium.title}>{home?.title}</h1>
+            <h2 style={{ fontWeight:"100", padding:"0 20px" }} className={stylesPremium.subtitle}>{home?.subtitle}</h2>
           </div>
         )}
         <div className={ styles.containerBtn }>

@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  const { text, language } = req.body;
+  const { text, language, mode } = req.body;
   const targetLang = language || "en";
 
   try {
@@ -15,11 +15,14 @@ export default async function handler(req, res) {
           {
             role: "system",
             content: `You are a strict grammar and logic corrector for ${targetLang.toUpperCase()} sentences.
-          - Ignore punctuation (commas, dots, question marks, exclamation marks).
           - Focus only on grammar, spelling, word order, verb tense, and logical correctness.
           - Always correct the ENTIRE sentence, not just part of it.
-          - The output must be a FULLY CORRECT version of the sentence that a native speaker could say naturally.
-          - Do NOT provide explanations. Return ONLY the corrected sentence.`,
+          - Do NOT provide explanations. Return ONLY the corrected sentence.
+          ${mode === "voice" ? `
+          - VOICE MODE: Do NOT add or change punctuation or capitalization. Preserve punctuation exactly as in the input (including if there is none). If the input has no punctuation, return the corrected text without punctuation as well.
+          ` : `
+          - Ignore punctuation when judging correctness, but you may keep or lightly adjust punctuation if needed.
+          `}`,
           },
           { role: "user", content: text },
         ],

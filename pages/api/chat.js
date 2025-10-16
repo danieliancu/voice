@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  const { original, corrected, language } = req.body;
+  const { original, corrected, language, mode } = req.body;
 
     // default la engleză dacă nu vine nimic
   const targetLang = language || "en";
@@ -93,7 +93,14 @@ Rules for evaluation (when input IS in ${langConfig.name}):
     • "explanation" = "" (empty string)
     • "corrections" = original sentence
     • "mistakes" = []
-    • "alternative" = still provided
+     • "alternative" = still provided
+
+${mode === "voice" ? `
+Additional constraints for VOICE MODE:
+- Never add or change punctuation in "corrections"; preserve punctuation exactly as in the original (even if missing or incorrect).
+- Do not mention punctuation anywhere. Do not list punctuation as mistakes.
+- If the only differences are punctuation or capitalization, treat the sentence as correct and return empty "explanation".
+` : ``}
 
 Return STRICT JSON only:
 
