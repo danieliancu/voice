@@ -4,6 +4,7 @@ import { Volume2, Check, Square, Mic, Pen, Send, BookOpen, Copy } from "lucide-r
 import { motion } from "framer-motion";
 import { useSound } from "../lib/SoundContext";
 import { useLanguage } from "@/lib/LanguageContext";
+import { useChat } from "@/lib/ChatContext";
 import React from "react";
 import PremiumModal from "@/components/PremiumModal";
 
@@ -13,7 +14,8 @@ export default function Home() {
   const [speaking, setSpeaking] = useState(false);
   const [writeMode, setWriteMode] = useState(false); // ➕ nou state
   const [inputText, setInputText] = useState(""); // ➕ text scris
-  const { language, voiceCode, introMessage, labels } = useLanguage();
+  const { language, voiceCode, introMessage, labels, home } = useLanguage();
+  const [showWelcome, setShowWelcome] = useState(true);
   const [messages, setMessages] = useState([
     {
       role: "ai",
@@ -40,6 +42,7 @@ const handleCopy = (text, key) => {
 
   let recognition;
 
+
   useEffect(() => {
     setMessages([
       {
@@ -59,7 +62,29 @@ const handleCopy = (text, key) => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Persist conversation across client-side route changes only
+  const { messages: savedMessages, setMessages: setSavedMessages } = useChat();
+
+  // Restore saved conversation on mount (if any)
+  useEffect(() => {
+    if (savedMessages && savedMessages.length > 0) {
+      setMessages(savedMessages);
+    }
+  }, []);
+
+  // Save latest conversation on unmount
+  const latestMessagesRef = useRef(messages);
+  useEffect(() => {
+    latestMessagesRef.current = messages;
+  }, [messages]);
+  useEffect(() => {
+    return () => {
+      setSavedMessages(latestMessagesRef.current || []);
+    };
+  }, []);
+
   const startListening = () => {
+    if (showWelcome) setShowWelcome(false);
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
     recognition = new SpeechRecognition();
@@ -227,9 +252,21 @@ const handleCopy = (text, key) => {
     await getAIResponse(messageToSend, corrected);
   };
 
+  // Show headings only initially; hide after first interaction or any non-intro message
+  const hasRealMessage = messages.some((m) => !m.intro);
+  useEffect(() => {
+    if (showWelcome && hasRealMessage) setShowWelcome(false);
+  }, [hasRealMessage, showWelcome]);
+
   return (
     <div className={styles.container}>
       <div className={styles.containerHeader}>
+        {showWelcome && !hasRealMessage && (
+          <div style={{ textAlign: "center", marginBottom: 12 }}>
+            <h1 className={styles.homeTitle}>{home?.title}</h1>
+            <h2 className={styles.homeSubtitle}>{home?.subtitle}</h2>
+          </div>
+        )}
         <div className={ styles.containerBtn }>
           {/* Buton TALK */}
           <motion.button
@@ -251,7 +288,13 @@ const handleCopy = (text, key) => {
 
           {/* Buton WRITE */}
           <button
-            onClick={() => setWriteMode((prev) => !prev)}
+            onClick={() => {
+              setWriteMode((prev) => {
+                const next = !prev;
+                if (next && showWelcome) setShowWelcome(false);
+                return next;
+              });
+            }}
             className={styles.talkButton}
             style={{ background: writeMode ? "#f59e0b" : "linear-gradient(90deg,#06b6d4,#3b82f6)" }}
           >
@@ -262,7 +305,10 @@ const handleCopy = (text, key) => {
 
           {/* Buton LEARN */}
           <button
-            onClick={() => setShowPremium(true)}
+            onClick={() => {
+              if (showWelcome) setShowWelcome(false);
+              setShowPremium(true);
+            }}
             className={styles.talkButton}
           >
             <span className={styles.containerBtn}>
