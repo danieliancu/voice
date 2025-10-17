@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
+import Link from "next/link";
 import styles from "../styles/Home.module.css";
 import stylesPremium from "../styles/Premium.module.css";
 import { Volume2, Check, Square, Mic, Pen, Send, BookOpen, Copy, Shield, Sparkles, Rocket, Languages as LanguagesIcon, MessageCircle, Clock } from "lucide-react";
@@ -75,6 +76,20 @@ const handleCopy = (text, key) => {
   useEffect(() => {
     if (savedMessages && savedMessages.length > 0) {
       setMessages(savedMessages);
+    }
+  }, []);
+
+  // Auto-enable Write mode via query param (?write=1) or hash (#write)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const shouldWrite = params.get("write") === "1" || window.location.hash === "#write";
+        if (shouldWrite) {
+          setWriteMode(true);
+          setShowWelcome(false);
+        }
+      } catch {}
     }
   }, []);
 
@@ -410,7 +425,18 @@ const handleCopy = (text, key) => {
               <div className={stylesPremium.plan}>
                 <h2 className={stylesPremium.planName}>Guest</h2>
                 <p className={stylesPremium.price}>Free</p>
-                <button className={stylesPremium.btn}>Start now</button>
+                <button
+                  className={stylesPremium.btn}
+                  onClick={() => {
+                    setWriteMode((prev) => {
+                      const next = !prev;
+                      if (next && showWelcome) setShowWelcome(false);
+                      return next;
+                    });
+                  }}
+                >
+                  Start now
+                </button>
                 <ul className={stylesPremium.features}>
                   <li><span className={stylesPremium.check}>✔</span> Limited access</li>
                   <li><span className={stylesPremium.check}>✔</span> Default English only</li>
@@ -424,7 +450,7 @@ const handleCopy = (text, key) => {
               <div className={stylesPremium.plan}>
                 <h2 className={stylesPremium.planName}>User</h2>
                 <p className={stylesPremium.price}>Free</p>
-                <button className={stylesPremium.btn}>Register</button>
+                <Link href="/user" className={stylesPremium.btn}>Register</Link>
                 <ul className={stylesPremium.features}>
                   <li><span className={stylesPremium.check}>✔</span> Multiple languages</li>
                   <li><span className={stylesPremium.check}>✔</span> Conversation history</li>
@@ -438,9 +464,9 @@ const handleCopy = (text, key) => {
               <div className={`${stylesPremium.plan} ${stylesPremium.featured}`}>
                 <h2 className={stylesPremium.planName}>Premium</h2>
                 <p className={stylesPremium.price}>£10 <span>/month</span></p>
-                <button className={`${stylesPremium.btn} ${stylesPremium.btnPrimary}`}>
+                <Link href="/user" className={`${stylesPremium.btn} ${stylesPremium.btnPrimary}`}>
                   Buy plan
-                </button>
+                </Link>
                 <ul className={stylesPremium.features}>
                   <li><span className={stylesPremium.check}>✔</span> Unlimited languages</li>
                   <li><span className={stylesPremium.check}>✔</span> Unlimited messages</li>

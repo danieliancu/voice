@@ -1,4 +1,5 @@
 import styles from "../styles/Premium.module.css";
+import Link from "next/link";
 import Footer from "@/components/Footer";
 
 export default function WhyPremium() {
@@ -15,7 +16,7 @@ export default function WhyPremium() {
         <div className={styles.plan}>
           <h2 className={styles.planName}>Guest</h2>
           <p className={styles.price}>Free</p>
-          <button className={styles.btn}>Start now</button>
+          <Link href="/?write=1" className={styles.btn}>Start now</Link>
           <ul className={styles.features}>
             <li><span className={styles.check}>✔</span> Limited access</li>
             <li><span className={styles.check}>✔</span> Default English only</li>
@@ -29,7 +30,7 @@ export default function WhyPremium() {
         <div className={styles.plan}>
           <h2 className={styles.planName}>User</h2>
           <p className={styles.price}>Free</p>
-          <button className={styles.btn}>Register</button>
+          <Link href="/user" className={styles.btn}>Register</Link>
           <ul className={styles.features}>
             <li><span className={styles.check}>✔</span> Multiple languages</li>
             <li><span className={styles.check}>✔</span> Conversation history</li>
@@ -43,9 +44,9 @@ export default function WhyPremium() {
         <div className={`${styles.plan} ${styles.featured}`}>
           <h2 className={styles.planName}>Premium</h2>
           <p className={styles.price}>£10 <span>/month</span></p>
-          <button className={`${styles.btn} ${styles.btnPrimary}`}>
+          <Link href="/user" className={`${styles.btn} ${styles.btnPrimary}`}>
             Buy plan
-          </button>
+          </Link>
           <ul className={styles.features}>
             <li><span className={styles.check}>✔</span> Unlimited languages</li>
             <li><span className={styles.check}>✔</span> Unlimited messages</li>
