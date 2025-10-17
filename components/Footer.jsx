@@ -1,7 +1,9 @@
 import styles from "../styles/Footer.module.css";
 import { Facebook, Instagram, Github, Youtube } from "lucide-react";
+import { useLanguage } from "@/lib/LanguageContext";
 
 export default function Footer() {
+  const { footer } = useLanguage();
   return (
     <footer className={styles.footer}>
       <div className={styles.top}>
@@ -13,43 +15,35 @@ export default function Footer() {
         {/* Mega-menu */}
         <div className={styles.links}>
           <div>
-            <h4>Solutions</h4>
+            <h4>{footer?.solutionsTitle}</h4>
             <ul>
-              <li><a href="#">Speaking Practice</a></li>
-              <li><a href="#">Writing Practice</a></li>
-              <li><a href="#">Grammar Correction</a></li>
-              <li><a href="#">AI Tutor</a></li>
-              <li><a href="#">Progress Tracking</a></li>
+              {footer?.solutions?.map((item, i) => (
+                <li key={i}><a href="#">{item}</a></li>
+              ))}
             </ul>
           </div>
           <div>
-            <h4>Support</h4>
+            <h4>{footer?.supportTitle}</h4>
             <ul>
-              <li><a href="#">Submit ticket</a></li>
-              <li><a href="#">Documentation</a></li>
-              <li><a href="#">Guides</a></li>
-              <li><a href="#">FAQ</a></li>
-              <li><a href="#">Contact us</a></li>
+              {footer?.support?.map((item, i) => (
+                <li key={i}><a href="#">{item}</a></li>
+              ))}
             </ul>
           </div>
           <div>
-            <h4>Company</h4>
+            <h4>{footer?.companyTitle}</h4>
             <ul>
-              <li><a href="#">About</a></li>
-              <li><a href="#">Blog</a></li>
-              <li><a href="#">Jobs</a></li>
-              <li><a href="#">Press</a></li>
-              <li><a href="#">Referral Program</a></li>
+              {footer?.company?.map((item, i) => (
+                <li key={i}><a href="#">{item}</a></li>
+              ))}
             </ul>
           </div>
           <div>
-            <h4>Legal</h4>
+            <h4>{footer?.legalTitle}</h4>
             <ul>
-              <li><a href="#">Terms of service</a></li>
-              <li><a href="#">Privacy policy</a></li>
-              <li><a href="#">License</a></li>
-              <li><a href="#">Cookies</a></li>
-              <li><a href="#">Security</a></li>
+              {footer?.legal?.map((item, i) => (
+                <li key={i}><a href="#">{item}</a></li>
+              ))}
             </ul>
           </div>
         </div>
@@ -60,12 +54,12 @@ export default function Footer() {
       {/* Newsletter */}
       <div className={styles.newsletter}>
         <div>
-          <h4>Subscribe to our newsletter</h4>
-          <p>The latest news, articles, and resources, sent to your inbox weekly.</p>
+          <h4>{footer?.newsletterTitle}</h4>
+          <p>{footer?.newsletterDesc}</p>
         </div>
         <form className={styles.form}>
-          <input type="email" placeholder="Enter your email" />
-          <button type="submit">Subscribe</button>
+          <input type="email" placeholder={footer?.newsletterPlaceholder} />
+          <button type="submit">{footer?.newsletterCTA}</button>
         </form>
       </div>
 
@@ -73,7 +67,7 @@ export default function Footer() {
 
       {/* Bottom */}
       <div className={styles.bottom}>
-        <p>© 2024 Fixbly. All rights reserved.</p>
+        <p>{footer?.bottom}</p>
         <div className={styles.socials}>
           <a href="#"><Facebook size={20} /></a>
           <a href="#"><Instagram size={20} /></a>

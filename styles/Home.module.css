@@ -12,11 +12,199 @@
 }
 
 
+
 .title {
   font-size: 1.6rem;
   text-align: center;
   color: #38bdf8;
   margin-bottom: 20px;
+}
+
+/* Remove border when welcome state is active */
+.noBorder {
+  border: none !important;
+}
+
+/* Landing (welcome) */
+.landing {
+  max-width: 1000px;
+  margin: 10px auto 0 auto;
+  color: #e5e7eb;
+  padding: 0 20px;
+}
+
+.valueGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin: 10px auto 24px auto;
+}
+
+.card {
+  background: #0f172a;
+  border: 1px solid white;
+  border-radius: 12px;
+  padding: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-align: center;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.15);
+}
+
+.cardIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(90deg, #06b6d4, #3b82f6);
+  color: white;
+  margin-bottom: 10px;
+}
+
+.cardTitle {
+  color: #38bdf8;
+  margin: 0 0 6px 0;
+  font-size: 1.05rem;
+}
+
+.cardText {
+  color: #9ca3af;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.section {
+  margin: 50px auto 0px auto;
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  /* color: #38bdf8; */
+  color: white;
+  margin: 0 0 12px 0;
+  text-align: center;
+}
+
+.stepGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.step {
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.stepNum {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: #1f2937;
+  color: #e5e7eb;
+  font-size: 3.5rem;
+  font-weight:lighter;
+  float:left;
+  margin:10px;
+}
+
+.stepTitle {
+  color: #e5e7eb;
+  margin: 0 0 4px 0;
+  font-size: 1rem;
+}
+
+.stepText {
+  color: #9ca3af;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.featureList {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  max-width: 760px;
+}
+
+.featureList li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px dashed rgba(255,255,255,0.2);
+  color: #d1d5db;
+}
+
+.featureList li:last-child {
+  border-bottom: none;
+}
+
+.featureIcon {
+  color: #22c55e;
+}
+
+.chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid white;
+  color: #e5e7eb;
+  background: #0f172a;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+}
+
+/* Full-bleed section wrapper for light background across viewport */
+.sectionFullBleed {
+  position: relative;
+  z-index: 0;
+  padding: 28px 0;
+  margin:50px 0;
+}
+
+.sectionFullBleed::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  top: 0;
+  bottom: 0;
+  background: rgba(255,255,255,0.08);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.08);
+}
+
+.sectionInner {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+@media screen and (max-width: 1000px) {
+  .valueGrid { grid-template-columns: repeat(2, 1fr); }
+  .stepGrid { grid-template-columns: 1fr; }
+}
+
+@media screen and (max-width: 600px) {
+  .valueGrid { grid-template-columns: 1fr; }
 }
 
 .containerBtn {
@@ -49,7 +237,7 @@
   width: 100%;
   max-width: 800px;
   margin: 0 auto 20px;
-  padding: 20px 0 0;
+  padding: 20px;
 }
 
 .containerHeader {
@@ -118,6 +306,7 @@
   .containerBtn {
     top:5px;
   }
+
 
 }
 
@@ -299,7 +488,7 @@
   gap: 10px;
   padding: 10px;
   background: #0f172a;
-  position: fixed;
+  position: fixed; /* remains fixed; footer will be below page content */
   bottom: 20px;
   left: 0;
   right: 0;
@@ -308,6 +497,8 @@
   max-width: 1020px;   /* aceeași limită ca .container */
   z-index: 100;
 }
+
+/* removed hero plans styles to restore original */
 
 .textInput {
   flex: 1;

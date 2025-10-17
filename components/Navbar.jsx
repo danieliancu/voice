@@ -15,7 +15,7 @@ export default function Navbar() {
   const [showUserModal, setShowUserModal] = useState(false); // 👈 modal user
 
   const router = useRouter();
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, header } = useLanguage();
   const { soundOn, setSoundOn } = useSound();
 
 
@@ -72,16 +72,16 @@ useEffect(() => {
                   onClick={() => toggleDropdown("features")}
                   className={styles.dropdownBtn}
                 >
-                  Features <ChevronDown size={14} />
+                  {header?.menu?.features} <ChevronDown size={14} />
                 </button>
                 <ul
                   className={`${styles.dropdownMenu} ${
                     activeDropdown === "features" ? styles.dropdownOpen : ""
                   }`}
                 >
-                  <li><a onClick={() => handleNavClick("#")}>How it works</a></li>
-                  <li><a onClick={() => handleNavClick("#")}>Examples</a></li>
-                  <li><a onClick={() => handleNavClick("#")}>Blog / Resources</a></li>
+                  <li><a onClick={() => handleNavClick("#")}>{header?.features?.how}</a></li>
+                  <li><a onClick={() => handleNavClick("#")}>{header?.features?.examples}</a></li>
+                  <li><a onClick={() => handleNavClick("#")}>{header?.features?.blog}</a></li>
                 </ul>
 
 
@@ -93,7 +93,7 @@ useEffect(() => {
                   onClick={() => handleNavClick("/why-premium")}
                   className={styles.dropdownBtn}
                 >
-                  Pricing
+                  {header?.menu?.pricing}
                 </button>
               </li>
 
@@ -103,17 +103,17 @@ useEffect(() => {
                   onClick={() => toggleDropdown("support")}
                   className={styles.dropdownBtn}
                 >
-                  Support <ChevronDown size={14} />
+                  {header?.menu?.support} <ChevronDown size={14} />
                 </button>
                 <ul
                   className={`${styles.dropdownMenu} ${
                     activeDropdown === "support" ? styles.dropdownOpen : ""
                   }`}
                 >
-                  <li><a onClick={() => handleNavClick("#")}>FAQ</a></li>
-                  <li><a onClick={() => handleNavClick("#")}>Contact</a></li>
-                  <li><a onClick={() => handleNavClick("#")}>Referral Program</a></li>
-                  <li><a onClick={() => handleNavClick("#")}>My Account</a></li>
+                  <li><a onClick={() => handleNavClick("#")}>{header?.support?.faq}</a></li>
+                  <li><a onClick={() => handleNavClick("#")}>{header?.support?.contact}</a></li>
+                  <li><a onClick={() => handleNavClick("#")}>{header?.support?.referral}</a></li>
+                  <li><a onClick={() => handleNavClick("#")}>{header?.support?.account}</a></li>
                 </ul>
               </li>
             </ul>
@@ -131,7 +131,7 @@ useEffect(() => {
                   setShowLangMenu((prev) => !prev);
                 }}
                 className={styles.langIcon}
-                aria-label="Select language"
+                aria-label={header?.aria?.selectLanguage}
               >
                 <Globe size={24} />
                 <span className={styles.langCode}>{language.toUpperCase()}</span>
@@ -163,7 +163,7 @@ useEffect(() => {
             <button
               onClick={() => setSoundOn((prev) => !prev)}
               className={styles.soundIcon}
-              aria-label="Toggle sound"
+              aria-label={header?.aria?.toggleSound}
             >
               {soundOn ? <Volume2 /> : <VolumeX />}
             </button>
@@ -193,7 +193,7 @@ useEffect(() => {
           <button
             className={styles.hamburger}
             onClick={() => setOpen(!open)}
-            aria-label="Toggle menu"
+            aria-label={header?.aria?.toggleMenu}
           >
             {open ? <X size={32} /> : <Menu size={32} />}
           </button>
